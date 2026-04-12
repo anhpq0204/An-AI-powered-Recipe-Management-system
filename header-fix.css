@@ -1,0 +1,42 @@
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a {
+  text-transform: uppercase;
+  padding: 8px 0 !important;
+  margin: 0 16px;
+  background-color: transparent !important;
+  border-bottom: none !important;
+  color: var(--gray-700) !important;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 1px;
+  position: relative;
+  transition: color 0.3s ease;
+  line-height: normal !important;
+}
+
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a::after {
+  content: "" !important;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px !important;
+  background: var(--primary) !important;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:hover,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:focus,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li.active > a {
+  color: var(--primary) !important;
+  background-color: transparent !important;
+  border-bottom: none !important;
+  font-weight: 600;
+}
+
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:hover::after,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:focus::after,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li.active > a::after {
+  width: 100% !important;
+  background: var(--primary) !important;
+  color: inherit;
+}

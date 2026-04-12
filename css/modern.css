@@ -116,7 +116,7 @@ h3 {
   border-radius: 50px;
   color: var(--white);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 1px;
   margin-bottom: 24px;
   text-transform: uppercase;
@@ -187,6 +187,8 @@ h3 {
   border-radius: 50px;
   font-size: 15px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   text-decoration: none;
   transition: var(--transition);
   cursor: pointer;
@@ -306,6 +308,8 @@ h3 {
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
 }
 
 /* ============================
@@ -324,6 +328,8 @@ h3 {
   border-radius: 50px;
   font-size: 13px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin-bottom: 16px;
@@ -424,6 +430,8 @@ h3 {
   color: var(--primary-dark);
   border-radius: 50px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   font-size: 14px;
   text-decoration: none;
   transform: translateY(15px);
@@ -587,7 +595,7 @@ h3 {
   color: var(--primary-light);
 }
 
-#container .footer-logo a {
+.footer-logo a {
   font-family: var(--font-heading);
   font-size: 24px;
   color: var(--white);
@@ -607,11 +615,11 @@ h3 {
   box-shadow: var(--shadow-sm);
 }
 
-#container .header-area .delicious-main-menu .classy-navbar {
+.header-area .delicious-main-menu .classy-navbar {
   height: 90px;
 }
 
-#container .header-area .delicious-main-menu .classy-navbar .nav-brand {
+.header-area .delicious-main-menu .classy-navbar .nav-brand {
   font-family: var(--font-heading);
   font-size: 24px;
   font-weight: 700;
@@ -619,7 +627,7 @@ h3 {
   letter-spacing: -0.5px;
 }
 
-#container
+
   .header-area
   .delicious-main-menu
   .classy-navbar
@@ -633,7 +641,7 @@ h3 {
   background-color: transparent;
   border-bottom: none;
   color: var(--gray-700);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 13px;
   letter-spacing: 1px;
   position: relative;
@@ -658,7 +666,7 @@ h3 {
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#container
+
   .header-area
   .delicious-main-menu
   .classy-navbar
@@ -666,7 +674,7 @@ h3 {
   > ul
   > li
   > a:hover,
-#container
+
   .header-area
   .delicious-main-menu
   .classy-navbar
@@ -698,7 +706,7 @@ h3 {
 }
 
 /* Active state */
-#container
+
   .header-area
   .delicious-main-menu
   .classy-navbar
@@ -710,6 +718,8 @@ h3 {
   background-color: transparent;
   border-bottom: none;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
 }
 
 .header-area
@@ -724,13 +734,13 @@ h3 {
 }
 
 /* Search icon */
-#container .header-area .delicious-main-menu .classynav .search-btn {
+.header-area .delicious-main-menu .classynav .search-btn {
   color: var(--gray-700);
   margin-left: 40px;
 }
 
-#container .header-area .delicious-main-menu .classynav .search-btn:hover i,
-#container .header-area .delicious-main-menu .classynav .search-btn:focus i {
+.header-area .delicious-main-menu .classynav .search-btn:hover i,
+.header-area .delicious-main-menu .classynav .search-btn:focus i {
   color: var(--primary);
 }
 
@@ -953,6 +963,8 @@ h3 {
   color: var(--white);
   font-size: 13px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   letter-spacing: 1.5px;
   margin-bottom: 20px;
   text-transform: uppercase;
@@ -1023,6 +1035,8 @@ h3 {
   padding-bottom: 15px;
   border-bottom: 1px solid var(--gray-200);
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
 }
 
 .recipe-description,
@@ -1239,6 +1253,8 @@ h3 {
   margin-bottom: 10px;
   text-align: center;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
 }
 
 .auth-container p.subtitle {
@@ -1285,7 +1301,7 @@ h3 {
   color: var(--primary);
   text-decoration: none;
   transition: var(--transition);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .auth-options a:hover {
@@ -1302,6 +1318,8 @@ h3 {
   border-radius: var(--radius-md);
   font-size: 16px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   cursor: pointer;
   transition: var(--transition);
   margin-bottom: 25px;
@@ -1325,6 +1343,8 @@ h3 {
 .auth-footer a {
   color: var(--primary);
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   text-decoration: none;
   transition: var(--transition);
 }
@@ -1343,7 +1363,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 500;
+  font-weight: 600;
   z-index: 10;
   opacity: 0.8;
   transition: var(--transition);
@@ -1444,6 +1464,8 @@ h3 {
 .auth-footer a {
   color: var(--primary);
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   text-decoration: none;
   transition: var(--transition);
 }
@@ -1470,7 +1492,7 @@ h3 {
   padding: 12px 15px;
   border-radius: var(--radius-sm);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 25px;
   text-align: center;
   border: 1px solid #ffc9c9;
@@ -1582,6 +1604,8 @@ span.calorie-badge,
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   letter-spacing: 0.3px;
   white-space: nowrap;
 }
@@ -1726,7 +1750,7 @@ span.calorie-badge,
   border: 1px solid rgba(45, 106, 79, 0.2);
   border-radius: 50px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--primary-dark);
   animation: fadeIn 0.2s ease;
 }
@@ -1752,6 +1776,8 @@ span.calorie-badge,
   border-radius: 50px;
   font-size: 15px;
   font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -1779,3 +1805,47 @@ span.calorie-badge,
   }
 }
 
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a {
+  text-transform: uppercase;
+  padding: 8px 0;
+  margin: 0 16px;
+  background-color: transparent;
+  border-bottom: none;
+  color: var(--gray-700);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1px;
+  position: relative;
+  transition: color 0.3s ease;
+  line-height: normal;
+}
+
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:hover,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:focus,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li.active > a {
+  color: var(--primary);
+  background-color: transparent;
+  border-bottom: none;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: none;
+}
+
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:hover::after,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li > a:focus::after,
+.header-area .delicious-main-menu .classy-navbar .classynav > ul > li.active > a::after {
+  width: 100%;
+  background: var(--primary);
+  color: inherit;
+}
