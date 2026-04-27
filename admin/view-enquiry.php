@@ -1,9 +1,4 @@
-<?php  if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+<?php  require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
   header('location:logout.php');
@@ -61,30 +56,30 @@ while ($row=mysqli_fetch_array($ret)) {
               
                 <tr>
     <th scope style="font-size: 15px;">Name</th>
-    <td><?php  echo $row['userName'];?></td>
+    <td><?php  echo htmlspecialchars($row['userName']);?></td>
     <th style="font-size: 15px;" scope>Email</th>
-    <td><?php  echo $row['userEmail'];?></td>
+    <td><?php  echo htmlspecialchars($row['userEmail']);?></td>
   </tr>
   <tr>
    <th style="font-size: 15px;" scope>Subject</th>
-    <td><?php  echo $row['subject'];?></td>
+    <td><?php  echo htmlspecialchars($row['subject']);?></td>
        <th style="font-size: 15px;" scope>Enq. Posting Date</th>
-    <td><?php  echo $row['postingDate'];?></td>
+    <td><?php  echo htmlspecialchars($row['postingDate']);?></td>
                 </tr>
                 <tr>
     
     <th style="font-size: 15px;">Message</th>
-    <td colspan="4"><?php  echo $row['commentMessage'];?></td>
+    <td colspan="4"><?php  echo htmlspecialchars($row['commentMessage']);?></td>
   </tr>
 <?php if($row['adminRemark']!=''): ?>
               <tr>
     
     <th style="font-size: 15px;">Admin Remark</th>
-    <td colspan="4"><?php  echo $row['adminRemark'];?></td>
+    <td colspan="4"><?php  echo htmlspecialchars($row['adminRemark']);?></td>
   </tr>
   <tr>
    <th style="font-size: 15px;" scope>Admin Remark Date</th>
-    <td><?php  echo $row['updationDate'];?></td>
+    <td><?php  echo htmlspecialchars($row['updationDate']);?></td>
   <?php endif; if($row['adminRemark']==''): ?>
   <form method="post">
   <tr>

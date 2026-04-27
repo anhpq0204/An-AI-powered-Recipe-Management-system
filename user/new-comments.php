@@ -1,10 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
@@ -72,7 +67,7 @@ $ret = mysqli_query($con, $queryStr);
                                 ?>
                                     <tr>
                                         <td><?php echo $cnt;?></td>
-                                        <td><a href="edit-recipe.php?recipeid=<?php echo $row['rid'];?>" target="_blank" class="text-primary text-decoration-none fw-bold"><?php echo htmlspecialchars($row['recipeTitle']);?></a></td>
+                                        <td><a href="edit-recipe.php?recipeid=<?php echo intval($row['rid']);?>" target="_blank" class="text-primary text-decoration-none fw-bold"><?php echo htmlspecialchars($row['recipeTitle']);?></a></td>
                                         <td><?php echo htmlspecialchars($row['userName']);?></td>
                                         <td><?php echo htmlspecialchars($row['userEmail']);?></td>
                                         <td><?php echo htmlspecialchars($row['commentMessage']);?></td>

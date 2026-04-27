@@ -102,22 +102,22 @@ while ($row = mysqli_fetch_array($ret)) {
 ?>
                 <div class="recipe-card">
                     <div class="recipe-card-image">
-                        <img src="user/images/<?php echo $row['recipePicture'];?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
+                        <img src="user/images/<?php echo htmlspecialchars($row['recipePicture']);?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
                         <div class="recipe-card-overlay">
-                            <a href="recipe-details.php?rid=<?php echo $row['id'];?>" class="view-recipe-btn">View Recipe</a>
+                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn">View Recipe</a>
                         </div>
                     </div>
                     <div class="recipe-card-body">
-                        <h5><a href="recipe-details.php?rid=<?php echo $row['id'];?>"><?php echo htmlspecialchars($row['recipeTitle']);?></a></h5>
+                        <h5><a href="recipe-details.php?rid=<?php echo intval($row['id']);?>"><?php echo htmlspecialchars($row['recipeTitle']);?></a></h5>
                         <div class="recipe-meta">
                             <?php if($row['recipePrepTime']) { ?>
-                            <span><i class="fa fa-clock-o"></i> <?php echo $row['recipePrepTime'];?> min</span>
+                            <span><i class="fa fa-clock-o"></i> <?php echo htmlspecialchars($row['recipePrepTime']);?> min</span>
                             <?php } ?>
                             <?php if($row['recipeYields']) { ?>
-                            <span><i class="fa fa-users"></i> <?php echo $row['recipeYields'];?> servings</span>
+                            <span><i class="fa fa-users"></i> <?php echo htmlspecialchars($row['recipeYields']);?> servings</span>
                             <?php } ?>
                             <?php if($row['totalCalories'] > 0) { ?>
-                            <span class="calorie-badge">🔥 <?php echo $row['totalCalories'];?> cal</span>
+                            <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
                             <?php } ?>
                         </div>
                         <?php if($row['FullName']) { ?>

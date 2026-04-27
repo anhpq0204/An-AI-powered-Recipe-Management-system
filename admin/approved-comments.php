@@ -1,9 +1,4 @@
-<?php   if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+<?php   require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
   header('location:logout.php');
@@ -88,15 +83,15 @@ while ($row=mysqli_fetch_array($ret)) {
         <tbody>
           <tr data-expanded="true">
             <td><?php echo $cnt;?></td>
-            <td><a href="edit-recipe.php?recipeid=<?php echo $row['rid'];?>" target="blank"><?php  echo $row['recipeTitle'];?></a></td>
-            <td><?php  echo $row['userName'];?></td>
-              <td><?php  echo $row['userEmail'];?></td>
-              <td><?php  echo $row['commentMessage'];?></td>
+            <td><a href="edit-recipe.php?recipeid=<?php echo intval($row['rid']);?>" target="blank"><?php  echo htmlspecialchars($row['recipeTitle']);?></a></td>
+            <td><?php  echo htmlspecialchars($row['userName']);?></td>
+              <td><?php  echo htmlspecialchars($row['userEmail']);?></td>
+              <td><?php  echo htmlspecialchars($row['commentMessage']);?></td>
               <td><button class="btn btn-success btn-sm">Approved</button></td>
-                  <td><?php  echo $row['postingDate'];?></td>
+                  <td><?php  echo htmlspecialchars($row['postingDate']);?></td>
                   <td>
               
-                    <a href="new-comments.php?action=reject&&cid=<?php echo $row['id']; ?>"  title="Reject this comment" onclick="return confirm('Do you really want to reject this comment?');" class="btn btn-danger btn-sm">Reject </a>
+                    <a href="new-comments.php?action=reject&&cid=<?php echo intval($row['id']); ?>"  title="Reject this comment" onclick="return confirm('Do you really want to reject this comment?');" class="btn btn-danger btn-sm">Reject </a>
                 </tr>
                 <?php 
 $cnt=$cnt+1;

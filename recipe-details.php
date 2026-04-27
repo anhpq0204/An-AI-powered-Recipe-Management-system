@@ -2,16 +2,18 @@
 include('includes/ai-helper.php');
 
 if(isset($_POST['submit'])) {
-    $fname=$_POST['fname'];
-    $emailid=$_POST['emailid'];
-    $message=$_POST['message'];
-    $recipeid=isset($_GET['rid']) ? intval($_GET['rid']) : 0;
-    $query=mysqli_query($con, "insert into comments(recipeId,userName,userEmail,commentMessage) value('$recipeid','$fname','$emailid','$message')");
-    if ($query) {
+    $fname = trim($_POST['fname']);
+    $emailid = trim($_POST['emailid']);
+    $message = trim($_POST['message']);
+    $recipeid = isset($_GET['rid']) ? intval($_GET['rid']) : 0;
+    $stmt = $con->prepare("INSERT INTO comments(recipeId, userName, userEmail, commentMessage) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("isss", $recipeid, $fname, $emailid, $message);
+    if ($stmt->execute()) {
         echo "<script>alert('Comment added successfully. After moderation it will show');</script>";
     } else {
         echo "<script>alert('Something went wrong. Please try again.');</script>";
     }
+    $stmt->close();
 }
 ?>
 <!DOCTYPE html>
@@ -39,19 +41,19 @@ while ($row = mysqli_fetch_array($ret)) {
     $ingredients = loadRecipeIngredients($con, $recipeid);
 ?>
     <!-- Page Header with Recipe Image -->
-    <section class="page-header-section page-header-tall" style="background-image: url(user/images/<?php echo $row['recipePicture'];?>);">
+    <section class="page-header-section page-header-tall" style="background-image: url(user/images/<?php echo htmlspecialchars($row['recipePicture']);?>);">
         <div class="page-header-overlay"></div>
         <div class="container">
             <div class="page-header-content">
                 <span class="page-tag">Recipe</span>
                 <h1><?php echo htmlspecialchars($row['recipeTitle']);?></h1>
                 <div class="recipe-detail-meta">
-                    <span>📅 <?php echo $row['postingDate'];?></span>
-                    <?php if($row['recipePrepTime']) { ?><span>⏱️ Prep: <?php echo $row['recipePrepTime'];?> min</span><?php } ?>
-                    <?php if($row['recipeCookTime']) { ?><span>🍳 Cook: <?php echo $row['recipeCookTime'];?> min</span><?php } ?>
-                    <?php if($row['recipeYields']) { ?><span>🍽️ Yields: <?php echo $row['recipeYields'];?> servings</span><?php } ?>
+                    <span>📅 <?php echo htmlspecialchars($row['postingDate']);?></span>
+                    <?php if($row['recipePrepTime']) { ?><span>⏱️ Prep: <?php echo htmlspecialchars($row['recipePrepTime']);?> min</span><?php } ?>
+                    <?php if($row['recipeCookTime']) { ?><span>🍳 Cook: <?php echo htmlspecialchars($row['recipeCookTime']);?> min</span><?php } ?>
+                    <?php if($row['recipeYields']) { ?><span>🍽️ Yields: <?php echo htmlspecialchars($row['recipeYields']);?> servings</span><?php } ?>
                     <?php if($row['totalCalories'] > 0) { ?>
-                    <span class="calorie-badge">🔥 <?php echo $row['totalCalories'];?> cal</span>
+                    <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
                     <?php } ?>
                 </div>
             </div>
@@ -67,7 +69,7 @@ while ($row = mysqli_fetch_array($ret)) {
                     <div class="recipe-detail-card">
                         <h3>Description</h3>
                         <div class="recipe-description">
-                            <?php echo $row['recipeDescription'];?>
+                            <?php echo nl2br(htmlspecialchars($row['recipeDescription']));?>
                         </div>
                     </div>
                 </div>
@@ -78,7 +80,7 @@ while ($row = mysqli_fetch_array($ret)) {
                         <h3>🥘 Ingredients</h3>
                         <?php if($row['totalCalories'] > 0): ?>
                         <div class="calorie-summary">
-                            <span class="calorie-total">🔥 <?php echo $row['totalCalories'];?> calories</span>
+                            <span class="calorie-total">🔥 <?php echo intval($row['totalCalories']);?> calories</span>
                             <small class="text-muted">estimated total</small>
                         </div>
                         <?php endif; ?>
@@ -148,7 +150,7 @@ while ($row = mysqli_fetch_array($ret)) {
                     <div class="comment-card">
                         <div class="comment-header">
                             <strong><?php echo htmlspecialchars($row['userName']);?></strong>
-                            <span class="comment-date"><?php echo $row['postingDate'];?></span>
+                            <span class="comment-date"><?php echo htmlspecialchars($row['postingDate']);?></span>
                         </div>
                         <p><?php echo htmlspecialchars($row['commentMessage']);?></p>
                     </div>

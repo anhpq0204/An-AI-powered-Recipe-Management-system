@@ -1,10 +1,5 @@
 <?php  
-if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
   header('location:logout.php');
@@ -35,7 +30,7 @@ $tdate=isset($_POST['todate']) ? $_POST['todate'] : '';
 ?>
 
     <div class="card-header">
-   Registered User Report from  <?php echo $fdate;?> to <?php echo $tdate;?>
+   Registered User Report from  <?php echo htmlspecialchars($fdate);?> to <?php echo htmlspecialchars($tdate);?>
     </div>
     <div>
       <table class="table" ui-jq="footable" ui-options='{
@@ -69,11 +64,11 @@ while ($row=mysqli_fetch_array($ret)) {
           <tr data-expanded="true">
             <td><?php echo $cnt;?></td>
               
-                  <td><?php  echo $row['FullName'];?></td>
-                 <td><?php  echo $row['MobileNumber'];?></td>
-                 <td><?php  echo $row['Email'];?></td>
-                  <td><?php  echo $row['RegDate'];?></td>
-                  <td><a href="user-recipes.php?uid=<?php  echo $row['ID'];?>&&uname=<?php  echo $row['FullName'];?>" class="btn btn-primary" target="blank">Recipes</a></td>
+                  <td><?php  echo htmlspecialchars($row['FullName']);?></td>
+                 <td><?php  echo htmlspecialchars($row['MobileNumber']);?></td>
+                 <td><?php  echo htmlspecialchars($row['Email']);?></td>
+                  <td><?php  echo htmlspecialchars($row['RegDate']);?></td>
+                  <td><a href="user-recipes.php?uid=<?php  echo intval($row['ID']);?>&&uname=<?php  echo htmlspecialchars($row['FullName']);?>" class="btn btn-primary" target="blank">Recipes</a></td>
                  
                 </tr>
                 <?php 

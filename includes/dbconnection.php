@@ -11,7 +11,8 @@ $db_name = $_ENV['DB_NAME'] ?? 'frsdb';
 
 $con = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 if(mysqli_connect_errno()){
-    echo "Connection Fail: " . mysqli_connect_error();
+    error_log("DB connection failed: " . mysqli_connect_error());
+    die("Database connection error. Please try again later.");
 }
 
   ?>

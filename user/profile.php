@@ -1,10 +1,5 @@
 <?php 
-if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {

@@ -44,15 +44,15 @@ if ($count > 0) {
 <?php while ($row = mysqli_fetch_array($ret)) { ?>
                 <div class="recipe-card animate-in">
                     <div class="recipe-card-image">
-                        <img src="user/images/<?php echo $row['recipePicture'];?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
+                        <img src="user/images/<?php echo htmlspecialchars($row['recipePicture']);?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
                         <div class="recipe-card-overlay">
-                            <a href="recipe-details.php?rid=<?php echo $row['id'];?>" class="view-recipe-btn">View Recipe</a>
+                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn">View Recipe</a>
                         </div>
                     </div>
                     <div class="recipe-card-body">
-                        <h5><a href="recipe-details.php?rid=<?php echo $row['id'];?>"><?php echo htmlspecialchars($row['recipeTitle']);?></a></h5>
+                        <h5><a href="recipe-details.php?rid=<?php echo intval($row['id']);?>"><?php echo htmlspecialchars($row['recipeTitle']);?></a></h5>
                         <div class="recipe-meta">
-                            <span><i class="fa fa-calendar"></i> <?php echo $row['postingDate'];?></span>
+                            <span><i class="fa fa-calendar"></i> <?php echo htmlspecialchars($row['postingDate']);?></span>
                             <?php if($row['totalCalories'] > 0) { ?>
                             <span class="calorie-badge">🔥 <?php echo $row['totalCalories'];?> cal</span>
                             <?php } ?>

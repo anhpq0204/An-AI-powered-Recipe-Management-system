@@ -1,10 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
  header('location:logout.php');
@@ -80,14 +75,14 @@ while ($row=mysqli_fetch_array($ret)) {
                                     <div class="form-group ">
                                         <label for="adminname" class="control-label col-lg-3">Page Title</label>
                                         <div class="col-lg-6">
-                                            <input class=" form-control" id="pagetitle" name="pagetitle" type="text" required="true" value="<?php  echo $row['PageTitle'];?>">
+                                            <input class=" form-control" id="pagetitle" name="pagetitle" type="text" required="true" value="<?php  echo htmlspecialchars($row['PageTitle']);?>">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="adminname" class="control-label col-lg-3">Page Description
                                         </label>
                                         <div class="col-lg-6">
-                                            <textarea class=" form-control" id="pagedes" name="pagedes" type="text" required="true" value=""><?php  echo $row['PageDescription'];?></textarea>
+                                            <textarea class=" form-control" id="pagedes" name="pagedes" type="text" required="true" value=""><?php  echo htmlspecialchars($row['PageDescription']);?></textarea>
                                         </div>
                                     </div>
                                     <?php } ?>

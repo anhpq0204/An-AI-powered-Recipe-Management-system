@@ -1,9 +1,4 @@
-<?php   if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+<?php   require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
   header('location:logout.php');
@@ -60,7 +55,7 @@ $sdata=$_POST['searchdata'];
   
 <div class="card-header">
    
-          Result against "<?php echo $sdata;?>" keyword</div>
+          Result against "<?php echo htmlspecialchars($sdata);?>" keyword</div>
 
       <table class="table" ui-jq="footable" ui-options='{
         "paging": {
@@ -98,13 +93,13 @@ while ($row=mysqli_fetch_array($ret)) {
         <tbody>
           <tr data-expanded="true">
             <td><?php echo $cnt;?></td>
-            <td><?php  echo $row['recipeTitle'];?></td>
-            <td><?php  echo $row['recipePrepTime'];?> Minutes</td>
-              <td><?php  echo $row['recipeCookTime'];?> Minutes</td>
-              <td><?php  echo $row['recipeYields'];?> Serves</td>
-                  <td><?php  echo $row['postingDate'];?></td>
-                  <td><a href="edit-recipe.php?recipeid=<?php echo $row['id'];?>" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="manage-food-details.php?action=delete&&bsid=<?php echo $row['ID']; ?>"  title="Delete this record" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm">Delete </a>
+            <td><?php  echo htmlspecialchars($row['recipeTitle']);?></td>
+            <td><?php  echo htmlspecialchars($row['recipePrepTime']);?> Minutes</td>
+              <td><?php  echo htmlspecialchars($row['recipeCookTime']);?> Minutes</td>
+              <td><?php  echo htmlspecialchars($row['recipeYields']);?> Serves</td>
+                  <td><?php  echo htmlspecialchars($row['postingDate']);?></td>
+                  <td><a href="edit-recipe.php?recipeid=<?php echo intval($row['id']);?>" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="manage-food-details.php?action=delete&&bsid=<?php echo intval($row['ID']); ?>"  title="Delete this record" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm">Delete </a>
                 </tr>
                 <?php 
 $cnt=$cnt+1;

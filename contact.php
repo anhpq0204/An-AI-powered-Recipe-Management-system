@@ -56,10 +56,10 @@ while ($row = mysqli_fetch_array($ret)) {
                     <div class="contact-info-card">
                         <div class="modern-section-heading" style="text-align: left; margin-bottom: 30px;">
                             <span class="section-tag" style="margin-bottom: 15px;">Contact Info</span>
-                            <h2 style="font-size: 32px;"><?php echo $row['PageTitle'];?></h2>
+                            <h2 style="font-size: 32px;"><?php echo htmlspecialchars($row['PageTitle']);?></h2>
                         </div>
                         <div class="contact-text">
-                            <?php echo $row['PageDescription'];?>
+                            <?php echo htmlspecialchars($row['PageDescription']);?>
                         </div>
                     </div>
 <?php } ?>

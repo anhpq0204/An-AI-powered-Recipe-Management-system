@@ -72,20 +72,20 @@ while ($row = mysqli_fetch_array($ret)) {
 ?>
                 <div class="recipe-card">
                     <div class="recipe-card-image">
-                        <img src="user/images/<?php echo $row['recipePicture'];?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
+                        <img src="user/images/<?php echo htmlspecialchars($row['recipePicture']);?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
                         <div class="recipe-card-overlay">
-                            <a href="recipe-details.php?rid=<?php echo $row['id'];?>" class="view-recipe-btn">View Recipe</a>
+                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn">View Recipe</a>
                         </div>
                     </div>
                     <div class="recipe-card-body">
-                        <h5><a href="recipe-details.php?rid=<?php echo $row['id'];?>"><?php echo htmlspecialchars($row['recipeTitle']);?></a></h5>
+                        <h5><a href="recipe-details.php?rid=<?php echo intval($row['id']);?>"><?php echo htmlspecialchars($row['recipeTitle']);?></a></h5>
                         <div class="recipe-meta">
-                            <span><i class="fa fa-calendar"></i> <?php echo $row['postingDate'];?></span>
+                            <span><i class="fa fa-calendar"></i> <?php echo htmlspecialchars($row['postingDate']);?></span>
                             <?php if($row['recipePrepTime']) { ?>
-                            <span><i class="fa fa-clock-o"></i> <?php echo $row['recipePrepTime'];?> min</span>
+                            <span><i class="fa fa-clock-o"></i> <?php echo htmlspecialchars($row['recipePrepTime']);?> min</span>
                             <?php } ?>
                             <?php if($row['totalCalories'] > 0) { ?>
-                            <span class="calorie-badge">🔥 <?php echo $row['totalCalories'];?> cal</span>
+                            <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
                             <?php } ?>
                         </div>
                         <?php if($row['FullName']) { ?>
@@ -104,6 +104,12 @@ while ($row = mysqli_fetch_array($ret)) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app.js"></script>
     <script>
+    function escHtml(str) {
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(str));
+        return d.innerHTML;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Animate cards
         var observer = new IntersectionObserver(function(entries) {
@@ -193,7 +199,13 @@ while ($row = mysqli_fetch_array($ret)) {
             ids.forEach(function(id) {
                 var tag = document.createElement('span');
                 tag.className = 'selected-tag';
-                tag.innerHTML = selectedIngredients[id] + ' <span class="remove-tag" data-id="' + id + '">&times;</span>';
+                var nameNode = document.createTextNode(selectedIngredients[id] + ' ');
+                var removeSpan = document.createElement('span');
+                removeSpan.className = 'remove-tag';
+                removeSpan.dataset.id = id;
+                removeSpan.innerHTML = '&times;';
+                tag.appendChild(nameNode);
+                tag.appendChild(removeSpan);
                 tagsEl.appendChild(tag);
             });
             searchBtn.disabled = ids.length === 0;
@@ -231,16 +243,17 @@ while ($row = mysqli_fetch_array($ret)) {
                 } else {
                     resultsCount.textContent = recipes.length + ' recipe' + (recipes.length > 1 ? 's' : '') + ' found';
                     recipes.forEach(function(r) {
+                        var rid = parseInt(r.id, 10) || 0;
                         var cardHtml = '<div class="recipe-card animate-in">' +
                             '<div class="recipe-card-image">' +
-                            '<img src="user/images/' + r.picture + '" alt="' + r.title + '" loading="lazy">' +
-                            '<div class="recipe-card-overlay"><a href="recipe-details.php?rid=' + r.id + '" class="view-recipe-btn">View Recipe</a></div>' +
+                            '<img src="user/images/' + escHtml(r.picture) + '" alt="' + escHtml(r.title) + '" loading="lazy">' +
+                            '<div class="recipe-card-overlay"><a href="recipe-details.php?rid=' + rid + '" class="view-recipe-btn">View Recipe</a></div>' +
                             '</div>' +
                             '<div class="recipe-card-body">' +
-                            '<h5><a href="recipe-details.php?rid=' + r.id + '">' + r.title + '</a></h5>' +
+                            '<h5><a href="recipe-details.php?rid=' + rid + '">' + escHtml(r.title) + '</a></h5>' +
                             '<div class="recipe-meta">' +
-                            (r.prepTime ? '<span>⏱️ ' + r.prepTime + ' min</span>' : '') +
-                            (r.totalCalories > 0 ? '<span class="calorie-badge">🔥 ' + r.totalCalories + ' cal</span>' : '') +
+                            (r.prepTime ? '<span>⏱️ ' + escHtml(String(r.prepTime)) + ' min</span>' : '') +
+                            (r.totalCalories > 0 ? '<span class="calorie-badge">🔥 ' + parseInt(r.totalCalories, 10) + ' cal</span>' : '') +
                             '</div></div></div>';
                         resultsGrid.insertAdjacentHTML('beforeend', cardHtml);
                     });

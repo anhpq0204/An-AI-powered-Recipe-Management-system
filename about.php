@@ -37,10 +37,10 @@ while ($row = mysqli_fetch_array($ret)) {
 ?>
             <div class="about-card">
                 <div class="modern-section-heading">
-                    <h2><?php echo $row['PageTitle'];?></h2>
+                    <h2><?php echo htmlspecialchars($row['PageTitle']);?></h2>
                 </div>
                 <div class="about-text">
-                    <?php echo $row['PageDescription'];?>
+                    <?php echo htmlspecialchars($row['PageDescription']);?>
                 </div>
             </div>
 <?php } ?>

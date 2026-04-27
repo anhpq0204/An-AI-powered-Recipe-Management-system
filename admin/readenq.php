@@ -1,9 +1,4 @@
-<?php  if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+<?php  require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
   header('location:logout.php');
@@ -63,13 +58,13 @@ while ($row=mysqli_fetch_array($ret)) {
          <tr class="gradeX">
                  <td><?php echo $cnt;?></td>
               
-                  <td><?php  echo $row['userName'];?></td>
-                                        <td><?php  echo $row['userEmail'];?></td>
-                                        <td><?php  echo $row['subject'];?></td>
+                  <td><?php  echo htmlspecialchars($row['userName']);?></td>
+                                        <td><?php  echo htmlspecialchars($row['userEmail']);?></td>
+                                        <td><?php  echo htmlspecialchars($row['subject']);?></td>
                                         <td>
-                                            <span class="badge badge-primary"><?php echo $row['postingDate'];?></span>
+                                            <span class="badge badge-primary"><?php echo htmlspecialchars($row['postingDate']);?></span>
                                         </td>
-                                         <td><a href="view-enquiry.php?enqid=<?php echo $row['id'];?>" class="btn btn-primary">View</a></td>
+                                         <td><a href="view-enquiry.php?enqid=<?php echo intval($row['id']);?>" class="btn btn-primary">View</a></td>
                 </tr>
          <?php 
 $cnt++;

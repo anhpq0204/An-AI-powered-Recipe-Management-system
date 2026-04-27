@@ -1,10 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { 
-    ini_set("session.gc_maxlifetime", 604800);
-    ini_set("session.cookie_lifetime", 604800);
-    session_set_cookie_params(604800);
-    session_start(); 
-}
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
@@ -98,8 +93,8 @@ $ret = mysqli_query($con, "SELECT * FROM recipes WHERE userId='$uid' ORDER BY id
                                         <td><?php echo htmlspecialchars($row['recipeYields']);?> Serves</td>
                                         <td><?php echo htmlspecialchars($row['postingDate']);?></td>
                                         <td>
-                                            <a href="edit-recipe.php?recipeid=<?php echo $row['id'];?>" class="btn btn-primary btn-sm">Edit</a>
-                                            <a href="manage-recipes.php?action=delete&bsid=<?php echo $row['id']; ?>" title="Delete this record" onclick="return confirm('Do you really want to delete this recipe?');" class="btn btn-danger btn-sm">Delete</a>
+                                            <a href="edit-recipe.php?recipeid=<?php echo intval($row['id']);?>" class="btn btn-primary btn-sm">Edit</a>
+                                            <a href="manage-recipes.php?action=delete&bsid=<?php echo intval($row['id']); ?>" title="Delete this record" onclick="return confirm('Do you really want to delete this recipe?');" class="btn btn-danger btn-sm">Delete</a>
                                         </td>
                                     </tr>
                                 <?php 
