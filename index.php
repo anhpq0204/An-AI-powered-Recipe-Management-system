@@ -15,11 +15,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Core Stylesheet -->
     <link rel="stylesheet" href="style.css">
-    <!-- Modern Override -->
-    <link rel="stylesheet" href="css/modern.css">
-
 </head>
 
 <body>
@@ -72,7 +68,7 @@
                 <div class="stat-item">
                     <div class="stat-icon">👨‍🍳</div>
                     <div class="stat-number" data-count="<?php echo $totalUsers;?>"><?php echo $totalUsers;?></div>
-                    <div class="stat-label">Home Cooks</div>
+                    <div class="stat-label">Users</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-icon">💬</div>

@@ -83,8 +83,8 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
 
 </section>
 
-<script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/app.js"></script>
+<script src="../dashboard-assets/js/bootstrap.bundle.min.js"></script>
+<script src="../dashboard-assets/js/app.js"></script>
 </body>
 </html>
 <?php }  ?>

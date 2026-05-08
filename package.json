@@ -1,0 +1,12 @@
+{
+  "name": "food-recipe-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "sass scss/style.scss style.css --style=expanded --no-source-map --silence-deprecation=import",
+    "watch": "sass scss/style.scss style.css --style=expanded --no-source-map --silence-deprecation=import --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.99.0"
+  }
+}

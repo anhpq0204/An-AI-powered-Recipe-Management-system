@@ -99,8 +99,8 @@ $cnt=$cnt+1;
 
 <!--main content end-->
 </section>
-<script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/app.js"></script>
+<script src="../dashboard-assets/js/bootstrap.bundle.min.js"></script>
+<script src="../dashboard-assets/js/app.js"></script>
 </body>
 </html>
 <?php }  ?>

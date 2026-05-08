@@ -40,6 +40,20 @@
                         <span>Search</span>
                     </a>
                 </li>
+
+                <li>
+                    <a class="<?php if($userCurrentPage == 'meal-planner.php') echo 'active';?>" href="meal-planner.php">
+                        <i class="fa fa-calendar"></i>
+                        <span>Meal Planner</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a class="<?php if(in_array($userCurrentPage, ['my-meal-plans.php', 'view-meal-plan.php'])) echo 'active';?>" href="my-meal-plans.php">
+                        <i class="fa fa-list"></i>
+                        <span>My Plans</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

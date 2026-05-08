@@ -13,5 +13,12 @@
 .DS_Store
 Thumbs.db
 
+# Node
+node_modules/
+
+# Generated CSS (compiled from SCSS)
+/style.css
+/style.css.map
+
 # Claude Code
 CLAUDE.md
