@@ -10,7 +10,7 @@ if(isset($_POST['login'])) {
     $ret=mysqli_fetch_array($query);
     if($ret){
       $_SESSION['frsuid']=$ret['ID'];
-      header('location:dashboard.php');
+      header('location:../index.php');
       exit;
     } else {
       $msg="Invalid Details. Please try again.";

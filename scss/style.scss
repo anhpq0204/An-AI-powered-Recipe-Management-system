@@ -2,7 +2,6 @@
 @import 'fonts';
 @import 'mixin';
 @import 'responsive';
-@import 'frontend';
 
 /* [Master Stylesheet v1.0]
 
@@ -1694,3 +1693,5 @@ textarea:focus {
         padding-left: 30px;
     }
 }
+/* Custom overrides — must be last so they win over vendor/template CSS */
+@import 'frontend';

@@ -1,13 +1,24 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.gc_maxlifetime', 604800);
+    ini_set('session.cookie_lifetime', 604800);
     session_start();
+}
+if (!isset($con)) {
+    include_once __DIR__ . '/dbconnection.php';
 }
 $_loggedInUser = null;
 if (!empty($_SESSION['frsuid'])) {
     $__uid = intval($_SESSION['frsuid']);
-    $__ret = mysqli_query($con, "SELECT FullName FROM users WHERE ID='$__uid' LIMIT 1");
-    if ($__ret && $__row = mysqli_fetch_assoc($__ret)) {
-        $_loggedInUser = htmlspecialchars($__row['FullName']);
+    $__stmt = $con->prepare("SELECT FullName FROM users WHERE ID = ? LIMIT 1");
+    if ($__stmt) {
+        $__stmt->bind_param("i", $__uid);
+        $__stmt->execute();
+        $__stmt->bind_result($__fullName);
+        if ($__stmt->fetch()) {
+            $_loggedInUser = htmlspecialchars($__fullName);
+        }
+        $__stmt->close();
     }
 }
 $_avatarInitial = $_loggedInUser ? mb_strtoupper(mb_substr($_loggedInUser, 0, 1)) : '';
@@ -35,9 +46,6 @@ $_avatarInitial = $_loggedInUser ? mb_strtoupper(mb_substr($_loggedInUser, 0, 1)
                                 <li class="<?php if($currentPage == 'index.php') echo 'active';?>"><a href="index.php">Home</a></li>
                                 <li class="<?php if($currentPage == 'about.php') echo 'active';?>"><a href="about.php">About Us</a></li>
                                 <li class="<?php if(in_array($currentPage, ['recipes.php', 'recipe-details.php', 'search.php'])) echo 'active';?>"><a href="recipes.php">Recipes</a></li>
-                                <?php if (!$_loggedInUser): ?>
-                                <li><a href="user/login.php">Login</a></li>
-                                <?php endif; ?>
                                 <li><a href="admin/login.php">Admin</a></li>
                                 <li class="<?php if($currentPage == 'contact.php') echo 'active';?>"><a href="contact.php">Contact</a></li>
                             </ul>
@@ -77,6 +85,10 @@ $_avatarInitial = $_loggedInUser ? mb_strtoupper(mb_substr($_loggedInUser, 0, 1)
                                     </a>
                                 </div>
                             </div>
+                            <?php else: ?>
+                            <a href="user/login.php" class="nav-login-btn">
+                                <i class="fa fa-user-circle"></i> Login
+                            </a>
                             <?php endif; ?>
                         </div>
                     </div>
