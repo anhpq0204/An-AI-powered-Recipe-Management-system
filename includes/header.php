@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/lang.php';
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.gc_maxlifetime', 604800);
     ini_set('session.cookie_lifetime', 604800);
@@ -43,15 +44,23 @@ $_avatarInitial = $_loggedInUser ? mb_strtoupper(mb_substr($_loggedInUser, 0, 1)
                         <div class="classynav">
                             <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
                             <ul>
-                                <li class="<?php if($currentPage == 'index.php') echo 'active';?>"><a href="index.php">Home</a></li>
-                                <li class="<?php if($currentPage == 'about.php') echo 'active';?>"><a href="about.php">About Us</a></li>
-                                <li class="<?php if(in_array($currentPage, ['recipes.php', 'recipe-details.php', 'search.php'])) echo 'active';?>"><a href="recipes.php">Recipes</a></li>
-                                <li><a href="admin/login.php">Admin</a></li>
-                                <li class="<?php if($currentPage == 'contact.php') echo 'active';?>"><a href="contact.php">Contact</a></li>
+                                <li class="<?php if($currentPage == 'index.php') echo 'active';?>"><a href="index.php"><?php _e('Home'); ?></a></li>
+                                <li class="<?php if($currentPage == 'about.php') echo 'active';?>"><a href="about.php"><?php _e('About Us'); ?></a></li>
+                                <li class="<?php if(in_array($currentPage, ['recipes.php', 'recipe-details.php', 'search.php'])) echo 'active';?>"><a href="recipes.php"><?php _e('Recipes'); ?></a></li>
+                                <li><a href="admin/login.php"><?php _e('Admin'); ?></a></li>
+                                <li class="<?php if($currentPage == 'contact.php') echo 'active';?>"><a href="contact.php"><?php _e('Contact'); ?></a></li>
                             </ul>
 
                             <div class="search-btn">
                                 <i class="fa fa-search" aria-hidden="true"></i>
+                            </div>
+
+                            <!-- Language switcher -->
+                            <?php $__lang = lang_current(); ?>
+                            <div class="lang-switcher">
+                                <a href="<?php echo lang_switcher_url('vi'); ?>" class="<?php echo $__lang === 'vi' ? 'active' : ''; ?>">VI</a>
+                                <span class="lang-sep">|</span>
+                                <a href="<?php echo lang_switcher_url('en'); ?>" class="<?php echo $__lang === 'en' ? 'active' : ''; ?>">EN</a>
                             </div>
 
                             <?php if ($_loggedInUser): ?>
@@ -67,27 +76,17 @@ $_avatarInitial = $_loggedInUser ? mb_strtoupper(mb_substr($_loggedInUser, 0, 1)
                                         </div>
                                     </div>
                                     <div class="user-dropdown-divider"></div>
-                                    <a href="user/dashboard.php" class="user-dropdown-item">
-                                        <i class="fa fa-dashboard"></i> Dashboard
-                                    </a>
-                                    <a href="user/meal-planner.php" class="user-dropdown-item">
-                                        <i class="fa fa-calendar"></i> Meal Planner
-                                    </a>
-                                    <a href="user/my-meal-plans.php" class="user-dropdown-item">
-                                        <i class="fa fa-list"></i> My Plans
-                                    </a>
-                                    <a href="user/profile.php" class="user-dropdown-item">
-                                        <i class="fa fa-user"></i> Profile
-                                    </a>
+                                    <a href="user/dashboard.php" class="user-dropdown-item"><i class="fa fa-dashboard"></i> Dashboard</a>
+                                    <a href="user/meal-planner.php" class="user-dropdown-item"><i class="fa fa-calendar"></i> Meal Planner</a>
+                                    <a href="user/my-meal-plans.php" class="user-dropdown-item"><i class="fa fa-list"></i> My Plans</a>
+                                    <a href="user/profile.php" class="user-dropdown-item"><i class="fa fa-user"></i> Profile</a>
                                     <div class="user-dropdown-divider"></div>
-                                    <a href="logout.php" class="user-dropdown-item user-dropdown-logout">
-                                        <i class="fa fa-sign-out"></i> Logout
-                                    </a>
+                                    <a href="logout.php" class="user-dropdown-item user-dropdown-logout"><i class="fa fa-sign-out"></i> Logout</a>
                                 </div>
                             </div>
                             <?php else: ?>
                             <a href="user/login.php" class="nav-login-btn">
-                                <i class="fa fa-user-circle"></i> Login
+                                <i class="fa fa-user-circle"></i> <?php _e('Login'); ?>
                             </a>
                             <?php endif; ?>
                         </div>

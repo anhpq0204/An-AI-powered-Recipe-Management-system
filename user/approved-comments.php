@@ -1,4 +1,5 @@
 <?php
+require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 
@@ -10,10 +11,10 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 $uid = $_SESSION['frsuid'];
 
 // ── LẤY DANH SÁCH BÌNH LUẬN ──────────────────────────────
-$queryStr = "SELECT recipes.recipeTitle, recipes.id as rid, comments.* 
-             FROM comments 
-             JOIN recipes ON recipes.id = comments.recipeId 
-             WHERE recipes.userId = '$uid'  AND comments.status='1' 
+$queryStr = "SELECT recipes.recipeTitle, recipes.id as rid, comments.*
+             FROM comments
+             JOIN recipes ON recipes.id = comments.recipeId
+             WHERE recipes.userId = '$uid' AND comments.status='1'
              ORDER BY comments.id DESC";
 $ret = mysqli_query($con, $queryStr);
 ?>
@@ -21,7 +22,7 @@ $ret = mysqli_query($con, $queryStr);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Food Recipe System | Approved Comments</title>
+    <title>Food Recipe System | <?php _e('Approved Comments'); ?></title>
 </head>
 <body>
 <section id="container">
@@ -35,15 +36,15 @@ $ret = mysqli_query($con, $queryStr);
 <section id="main-content">
     <section class="wrapper">
         <h1 class="user-page-title">
-            Approved Comments
-            <small>Manage comments on your recipes</small>
+            <?php _e('Approved Comments'); ?>
+            <small><?php _e('Manage comments on your recipes'); ?></small>
         </h1>
-        
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
                     <header class="card-header">
-                        Approved Comments Overview
+                        <?php _e('Approved Comments Overview'); ?>
                     </header>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -51,12 +52,12 @@ $ret = mysqli_query($con, $queryStr);
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Recipe Title</th>
-                                        <th>User Name</th>
-                                        <th>Email</th>
-                                        <th>Comment</th>
-                                        <th>Status</th>
-                                        <th>Comment Date</th>
+                                        <th><?php _e('Recipe Title'); ?></th>
+                                        <th><?php _e('User Name'); ?></th>
+                                        <th><?php _e('Email'); ?></th>
+                                        <th><?php _e('Comment'); ?></th>
+                                        <th><?php _e('Status'); ?></th>
+                                        <th><?php _e('Comment Date'); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -74,21 +75,21 @@ $ret = mysqli_query($con, $queryStr);
                                         <td>
                                             <?php $status = $row['status']; ?>
                                             <?php if($status == ''): ?>
-                                                <button class="btn btn-warning btn-sm">Waiting for Approval</button>
+                                                <button class="btn btn-warning btn-sm"><?php _e('Waiting for Approval'); ?></button>
                                             <?php elseif($status == '0'): ?>
-                                                <button class="btn btn-danger btn-sm">Rejected</button>
+                                                <button class="btn btn-danger btn-sm"><?php _e('Rejected'); ?></button>
                                             <?php else: ?>
-                                                <button class="btn btn-success btn-sm">Approved</button>
+                                                <button class="btn btn-success btn-sm"><?php _e('Approved'); ?></button>
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($row['postingDate']);?></td>
                                     </tr>
-                                <?php 
+                                <?php
                                         $cnt++;
                                     }
                                 } else { ?>
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">No comments found.</td>
+                                        <td colspan="7" class="text-center text-muted py-4"><?php _e('No comments found.'); ?></td>
                                     </tr>
                                 <?php } ?>
                                 </tbody>
@@ -101,7 +102,7 @@ $ret = mysqli_query($con, $queryStr);
     </section>
 
     <!-- Footer -->
-    <?php include_once('includes/footer.php');?>    
+    <?php include_once('includes/footer.php');?>
 </section>
 
 </section>

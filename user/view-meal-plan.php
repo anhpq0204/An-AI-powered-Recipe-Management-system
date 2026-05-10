@@ -1,4 +1,5 @@
 <?php
+require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
@@ -83,21 +84,21 @@ $totalCalories = round($totalCalories);
     <section class="wrapper">
 
         <div class="d-flex align-items-center gap-3 mb-1">
-            <a href="my-meal-plans.php" class="btn btn-sm btn-outline-secondary">← My Plans</a>
+            <a href="my-meal-plans.php" class="btn btn-sm btn-outline-secondary"><?php _e('← My Plans'); ?></a>
         </div>
 
         <h1 class="user-page-title">
             <?php echo htmlspecialchars($plan['plan_name']); ?>
-            <small>Created <?php echo date('d/m/Y H:i', strtotime($plan['created_at'])); ?> &middot; <?php echo count($recipes); ?> recipes</small>
+            <small><?php _e('Created'); ?> <?php echo date('d/m/Y H:i', strtotime($plan['created_at'])); ?> &middot; <?php echo count($recipes); ?> <?php _e('recipes'); ?></small>
         </h1>
 
         <div class="row g-4">
             <!-- Recipes list -->
             <div class="col-12 col-lg-5">
                 <div class="user-content-card">
-                    <h5 class="mb-3">🍽️ Recipes in this plan</h5>
+                    <h5 class="mb-3"><?php _e('🍽️ Recipes in this plan'); ?></h5>
                     <?php if (empty($recipes)): ?>
-                        <p class="text-muted">No recipes in this plan.</p>
+                        <p class="text-muted"><?php _e('No recipes in this plan.'); ?></p>
                     <?php else: ?>
                     <div class="d-flex flex-column gap-2">
                     <?php foreach ($recipes as $r): ?>
@@ -124,16 +125,16 @@ $totalCalories = round($totalCalories);
             <div class="col-12 col-lg-7">
                 <div class="user-content-card">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">🛒 Shopping List</h5>
+                        <h5 class="mb-0"><?php _e('🛒 Shopping List'); ?></h5>
                         <?php if ($totalCalories > 0): ?>
                         <span class="badge bg-warning text-dark">🔥 <?php echo $totalCalories; ?> cal total</span>
                         <?php endif; ?>
                     </div>
 
                     <?php if (empty($ingredients)): ?>
-                        <p class="text-muted">No ingredient data available for these recipes.</p>
+                        <p class="text-muted"><?php _e('No ingredient data available for these recipes.'); ?></p>
                     <?php else: ?>
-                    <p class="text-muted small mb-3">Check off ingredients as you gather them.</p>
+                    <p class="text-muted small mb-3"><?php _e('Check off ingredients as you gather them.'); ?></p>
                     <ul class="shopping-list list-unstyled">
                     <?php foreach ($ingredients as $ing): ?>
                         <li class="shopping-list-item">

@@ -1,4 +1,4 @@
-<?php include('includes/dbconnection.php'); ?>
+<?php include('includes/dbconnection.php'); require_once('includes/lang.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,9 +20,9 @@
         <div class="page-header-overlay"></div>
         <div class="container">
             <div class="page-header-content">
-                <span class="page-tag">About</span>
-                <h1>About Us</h1>
-                <p>Learn more about Food Recipe System</p>
+                <span class="page-tag"><?php _e('About'); ?></span>
+                <h1><?php _e('About Us'); ?></h1>
+                <p><?php _e('Learn more about Food Recipe System'); ?></p>
             </div>
         </div>
     </section>
@@ -50,8 +50,8 @@ while ($row = mysqli_fetch_array($ret)) {
     <section class="modern-gallery-section">
         <div class="container">
             <div class="modern-section-heading">
-                <span class="section-tag">Gallery</span>
-                <h2>Food <span class="highlight">Inspiration</span></h2>
+                <span class="section-tag"><?php _e('Gallery'); ?></span>
+                <h2><?php echo __('Food <span class="highlight">Inspiration</span>'); ?></h2>
             </div>
         </div>
         <div class="gallery-grid">

@@ -173,11 +173,11 @@ function saveIngredientsToDb(mysqli $con, int $recipeId, array $aiResult): bool 
             $updateStmt = $con->prepare(
                 "UPDATE ingredients SET
                     caloriesPer100g = IF(caloriesPer100g = 0 AND ? > 0, ?, caloriesPer100g),
-                    standardUnit    = IF(caloriesPer100g = 0 AND ? > 0, ?, standardUnit),
+                    standardUnit    = IF(? = 'ml', 'ml', standardUnit),
                     name_vi         = IF(name_vi IS NULL AND ? != '', ?, name_vi)
                  WHERE id = ?"
             );
-            $updateStmt->bind_param("iisissi", $caloriesPer100g, $caloriesPer100g, $caloriesPer100g, $standardUnit, $nameVi, $nameVi, $ingredientId);
+            $updateStmt->bind_param("iisssi", $caloriesPer100g, $caloriesPer100g, $standardUnit, $nameVi, $nameVi, $ingredientId);
             $updateStmt->execute();
             $updateStmt->close();
         } else {

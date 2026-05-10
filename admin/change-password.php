@@ -1,4 +1,5 @@
 <?php
+require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 
@@ -11,19 +12,18 @@ $adminid = $_SESSION['frsaid'];
 $msg = "";
 $msgType = "";
 
-// ── XỬ LÝ ĐỔI MẬT KHẨU ───────────────────────────────────
 if (isset($_POST['submit'])) {
     $cpassword = md5($_POST['currentpassword']);
     $newpassword = md5($_POST['newpassword']);
-    
+
     $query = mysqli_query($con, "SELECT ID FROM admins WHERE ID='$adminid' AND Password='$cpassword'");
     $row = mysqli_fetch_array($query);
     if ($row > 0) {
         $ret = mysqli_query($con, "UPDATE admins SET Password='$newpassword' WHERE ID='$adminid'");
-        $msg = "Password successfully changed.";
+        $msg = __('Password successfully changed.');
         $msgType = "success";
     } else {
-        $msg = "Your current password is wrong.";
+        $msg = __('Your current password is wrong.');
         $msgType = "danger";
     }
 }
@@ -36,7 +36,7 @@ if (isset($_POST['submit'])) {
     <script type="text/javascript">
         function checkpass() {
             if (document.changepassword.newpassword.value != document.changepassword.confirmpassword.value) {
-                alert('New Password and Confirm Password field does not match');
+                alert('<?php echo addslashes(__('New Password and Confirm Password field does not match')); ?>');
                 document.changepassword.confirmpassword.focus();
                 return false;
             }
@@ -47,24 +47,21 @@ if (isset($_POST['submit'])) {
 <body>
 <section id="container">
 
-<!-- Header -->
 <?php include_once('includes/header.php');?>
-<!-- Sidebar -->
 <?php include_once('includes/sidebar.php');?>
 
-<!-- Main Content -->
 <section id="main-content">
     <section class="wrapper">
         <h1 class="page-title" style="margin-bottom: 20px;">
-            Security Settings
-            <small style="display: block; font-size: 14px; font-weight: normal; color: var(--text-muted);">Ensure your admin account is secure</small>
+            <?php _e('Security Settings'); ?>
+            <small style="display: block; font-size: 14px; font-weight: normal; color: var(--text-muted);"><?php _e('Ensure your admin account is secure'); ?></small>
         </h1>
-        
+
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
                 <div class="card">
                     <header class="card-header">
-                        Change Password
+                        <?php _e('Change Password'); ?>
                     </header>
                     <div class="card-body">
                         <?php if ($msg): ?>
@@ -76,21 +73,21 @@ if (isset($_POST['submit'])) {
 
                         <form class="cmxform form-horizontal" method="post" action="" name="changepassword" onsubmit="return checkpass();">
                             <div class="form-group row mb-3">
-                                <label for="currentpassword" class="control-label col-lg-4">Current Password</label>
+                                <label for="currentpassword" class="control-label col-lg-4"><?php _e('Current Password'); ?></label>
                                 <div class="col-lg-8">
                                     <input class="form-control" id="currentpassword" name="currentpassword" type="password" required>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group row mb-3">
-                                <label for="newpassword" class="control-label col-lg-4">New Password</label>
+                                <label for="newpassword" class="control-label col-lg-4"><?php _e('New Password'); ?></label>
                                 <div class="col-lg-8">
                                     <input class="form-control" id="newpassword" name="newpassword" type="password" required>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group row mb-3">
-                                <label for="confirmpassword" class="control-label col-lg-4">Confirm Password</label>
+                                <label for="confirmpassword" class="control-label col-lg-4"><?php _e('Confirm Password'); ?></label>
                                 <div class="col-lg-8">
                                     <input class="form-control" id="confirmpassword" name="confirmpassword" type="password" required>
                                 </div>
@@ -98,7 +95,7 @@ if (isset($_POST['submit'])) {
 
                             <div class="form-group row mt-4">
                                 <div class="col-lg-12 text-center">
-                                    <button class="btn btn-primary px-4" type="submit" name="submit">Change Password</button>
+                                    <button class="btn btn-primary px-4" type="submit" name="submit"><?php _e('Change Password'); ?></button>
                                 </div>
                             </div>
                         </form>
@@ -108,8 +105,7 @@ if (isset($_POST['submit'])) {
         </div>
     </section>
 
-    <!-- Footer -->
-    <?php include_once('includes/footer.php');?>    
+    <?php include_once('includes/footer.php');?>
 </section>
 
 </section>

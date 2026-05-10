@@ -1,4 +1,5 @@
 <?php
+require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
@@ -25,7 +26,7 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Food Recipe System | My Meal Plans</title>
+    <title>Food Recipe System | <?php _e('My Meal Plans'); ?></title>
 </head>
 <body>
 <section id="container">
@@ -37,22 +38,22 @@ $stmt->close();
     <section class="wrapper">
 
         <h1 class="user-page-title">
-            My Meal Plans
-            <small>Your saved ingredient shopping lists</small>
+            <?php _e('My Meal Plans'); ?>
+            <small><?php _e('Your saved ingredient shopping lists'); ?></small>
         </h1>
 
         <div class="user-content-card">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0">Saved Plans</h4>
-                <a href="meal-planner.php" class="btn btn-sm btn-primary">+ New Plan</a>
+                <h4 class="mb-0"><?php _e('Saved Plans'); ?></h4>
+                <a href="meal-planner.php" class="btn btn-sm btn-primary"><?php _e('+ New Plan'); ?></a>
             </div>
 
             <?php if (empty($plans)): ?>
             <div class="empty-state text-center py-5">
                 <div style="font-size:48px;">📋</div>
-                <h4>No meal plans yet</h4>
-                <p class="text-muted">Go to Meal Planner to select recipes and save your first plan.</p>
-                <a href="meal-planner.php" class="btn btn-primary mt-2">Go to Meal Planner</a>
+                <h4><?php _e('No meal plans yet'); ?></h4>
+                <p class="text-muted"><?php _e('Go to Meal Planner to select recipes and save your first plan.'); ?></p>
+                <a href="meal-planner.php" class="btn btn-primary mt-2"><?php _e('Go to Meal Planner'); ?></a>
             </div>
             <?php else: ?>
             <div class="table-responsive">
@@ -60,10 +61,10 @@ $stmt->close();
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
-                            <th>Plan Name</th>
-                            <th>Created</th>
-                            <th>Recipes</th>
-                            <th>Actions</th>
+                            <th><?php _e('Plan Name'); ?></th>
+                            <th><?php _e('Created'); ?></th>
+                            <th><?php _e('Recipes'); ?></th>
+                            <th><?php _e('Actions'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,12 +73,12 @@ $stmt->close();
                             <td><?php echo $i + 1; ?></td>
                             <td><strong><?php echo htmlspecialchars($plan['plan_name']); ?></strong></td>
                             <td><?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($plan['created_at']))); ?></td>
-                            <td><?php echo intval($plan['recipe_count']); ?> recipes</td>
+                            <td><?php echo intval($plan['recipe_count']); ?> <?php _e('recipes'); ?></td>
                             <td>
                                 <a href="view-meal-plan.php?plan_id=<?php echo intval($plan['id']); ?>"
-                                   class="btn btn-sm btn-outline-primary me-1">👁 View</a>
+                                   class="btn btn-sm btn-outline-primary me-1"><?php _e('👁 View'); ?></a>
                                 <button class="btn btn-sm btn-outline-danger"
-                                        onclick="deletePlan(<?php echo intval($plan['id']); ?>, this)">🗑 Delete</button>
+                                        onclick="deletePlan(<?php echo intval($plan['id']); ?>, this)"><?php _e('🗑 Delete'); ?></button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -95,8 +96,13 @@ $stmt->close();
 <script src="../dashboard-assets/js/bootstrap.bundle.min.js"></script>
 <script src="../dashboard-assets/js/app.js"></script>
 <script>
+var i18n = {
+    confirmDelete: '<?php echo addslashes(__('Delete this meal plan?')); ?>',
+    couldNotDelete:'<?php echo addslashes(__('Could not delete plan: ')); ?>',
+    errorDelete:   '<?php echo addslashes(__('Error deleting plan. Please try again.')); ?>',
+};
 function deletePlan(planId, btn) {
-    if (!confirm('Delete this meal plan?')) return;
+    if (!confirm(i18n.confirmDelete)) return;
     btn.disabled = true;
 
     var form = new FormData();
@@ -109,12 +115,12 @@ function deletePlan(planId, btn) {
             var row = document.getElementById('plan-row-' + planId);
             if (row) row.remove();
         } else {
-            alert('Could not delete plan: ' + (data.error || 'Unknown error'));
+            alert(i18n.couldNotDelete + (data.error || ''));
             btn.disabled = false;
         }
     })
     .catch(function() {
-        alert('Error deleting plan. Please try again.');
+        alert(i18n.errorDelete);
         btn.disabled = false;
     });
 }

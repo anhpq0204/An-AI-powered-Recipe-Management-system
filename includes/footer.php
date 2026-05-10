@@ -10,7 +10,7 @@
                 <div class="footer-logo">
                     <a href="index.php">FRS</a>
                 </div>
-                <p>&copy; <?php echo date('Y'); ?> Food Recipe System</p>
+                <p>&copy; <?php echo date('Y'); ?> <?php _e('Food Recipe System'); ?></p>
             </div>
         </div>
     </div>

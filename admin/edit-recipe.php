@@ -1,4 +1,6 @@
-<?php require_once('../includes/session.php');
+<?php
+require_once('../includes/lang.php');
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 include('../includes/ai-helper.php');
 
@@ -25,9 +27,9 @@ if (isset($_POST['update'])) {
     } else {
         $extension = strtolower(substr($picdata, strrpos($picdata, '.')));
         $allowed_extensions = array('.jpg', '.jpeg', '.png', '.gif');
-        
+
         if (!in_array($extension, $allowed_extensions)) {
-            $msg = "Invalid format. Only jpg / jpeg/ png /gif format allowed.";
+            $msg = __('Invalid format. Only jpg / jpeg/ png /gif format allowed.');
             $msgType = "danger";
             $foodpic = $_POST["image"];
         } else {
@@ -44,13 +46,13 @@ if (isset($_POST['update'])) {
         $fitem = isset($_POST["fitem"]) ? $_POST["fitem"] : [];
         $fitem = array_filter($fitem, function($value) { return trim($value) !== ''; });
         $fitem = array_values($fitem);
-        
+
         if (!empty($fitem)) {
             $aiResult = processIngredients($fitem);
-            
+
             if ($aiResult !== false) {
                 saveIngredientsToDb($con, $recipeid, $aiResult);
-                $msg = "Recipe updated! AI calculated " . $aiResult['totalCalories'] . " calories.";
+                $msg = sprintf(__('Recipe updated! AI calculated %d calories.'), $aiResult['totalCalories']);
                 $msgType = "success";
             } else {
                 // AI failed - fallback
@@ -69,15 +71,15 @@ if (isset($_POST['update'])) {
                     }
                     mysqli_query($con, "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantityOriginal) VALUES ($recipeid, $ingredientId, '$itemEscaped')");
                 }
-                $msg = "Recipe updated (AI unavailable - calories not recalculated).";
+                $msg = __('Recipe updated (AI unavailable - calories not recalculated).');
                 $msgType = "success";
             }
         } else {
-            $msg = "Recipe updated.";
+            $msg = __('Recipe updated.');
             $msgType = "success";
         }
     } else {
-        $msg = "Something went wrong. Please try again.";
+        $msg = __('Something went wrong. Please try again.');
         $msgType = "danger";
     }
 }
@@ -93,10 +95,12 @@ if ($recipeData) {
 }
 ?>
 <!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Food Recipe System | Edit Recipe Details</title>
-
+<meta charset="UTF-8">
+<title>Food Recipe System | <?php _e('Edit Recipe Details'); ?></title>
 <script>
+var enterIngredientLabel = '<?php echo addslashes(__('Enter Recipe Ingredient')); ?>';
 document.addEventListener('DOMContentLoaded', function() {
     var i = 1;
     var addBtn = document.getElementById('add');
@@ -106,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var table = document.getElementById('dynamic_field');
             if (table) {
                 table.insertAdjacentHTML('beforeend',
-                    '<tr id="row' + i + '"><td><input type="text" name="fitem[]" placeholder="Enter Recipe Ingredient" class="form-control name_list" autocomplete="off" /></td><td><button type="button" name="remove" id="' + i + '" class="btn btn-danger btn_remove">X</button></td></tr>'
+                    '<tr id="row' + i + '"><td><input type="text" name="fitem[]" placeholder="' + enterIngredientLabel + '" class="form-control name_list" autocomplete="off" /></td><td><button type="button" name="remove" id="' + i + '" class="btn btn-danger btn_remove">X</button></td></tr>'
                 );
             }
         });
@@ -124,140 +128,131 @@ document.addEventListener('DOMContentLoaded', function() {
 </head>
 <body>
 <section id="container">
-<!--header start-->
 <?php include_once('includes/header.php');?>
-<!--header end-->
-<!--sidebar start-->
 <?php include_once('includes/sidebar.php');?>
-<!--sidebar end-->
-<!--main content start-->
 <section id="main-content">
-	<section class="wrapper">
-	<div class="form-w3layouts">
-    
-        <div class="row">
-        <div class="col-lg-12">
-        <section class="panel">
-            <header class="card-header">
-                Edit Recipe Details
-            </header>
-            <div class="card-body">
+    <section class="wrapper">
+        <div class="form-w3layouts">
+            <div class="row">
+                <div class="col-lg-12">
+                    <section class="panel">
+                        <header class="card-header">
+                            <?php _e('Edit Recipe Details'); ?>
+                        </header>
+                        <div class="card-body">
 
-                <?php if ($msg): ?>
-                    <div class="alert alert-<?php echo $msgType; ?> alert-dismissible fade show">
-                        <?php echo htmlspecialchars($msg); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-                
-      <?php if ($recipeData): ?>
-
-                <form class="form-horizontal bucket-form" method="post" enctype="multipart/form-data">
-
-                   <div class="form-group">
-                        <label class="col-sm-3 control-label">Recipe Title </label>
-                        <div class="col-sm-6">
-                            <input class="form-control" id="recipetitle" name="recipetitle" value="<?php echo htmlspecialchars($recipeData['recipeTitle']);?>" type="text" required="true">
-                        </div>
-                    </div>
-
-                   <div class="form-group">
-                        <label class="col-sm-3 control-label">Recipe Preperation Time <small>(in minutes)</small></label>
-                        <div class="col-sm-6">
-                            <input class="form-control" id="recipeprep" name="recipeprep" value="<?php echo htmlspecialchars($recipeData['recipePrepTime']);?>" pattern="[0-9]+" type="text" required="true" title="Numbers only">
-                        </div>
-                    </div>
-
-
-         <div class="form-group">
-                        <label class="col-sm-3 control-label">Recipe Cook Time <small>(in minutes)</small></label>
-                        <div class="col-sm-6">
-                            <input class="form-control" id="recipecooktime" name="recipecooktime" value="<?php echo htmlspecialchars($recipeData['recipeCookTime']);?>"  pattern="[0-9]+" type="text" required="true" title="Numbers only">
-                        </div>
-                    </div>
-
-
-        <div class="form-group">
-                        <label class="col-sm-3 control-label">Yields <small>(Eg: 8 Servings)</small></label>
-                        <div class="col-sm-6">
-                            <input class="form-control" id="yields" name="yields" value="<?php echo htmlspecialchars($recipeData['recipeYields']);?>"  pattern="[0-9]+" type="text" required="true" title="Numbers only">
-                        </div>
-                    </div>
-
-
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Recipe Ingredients</label>
-                        <div class="col-sm-6">
-                            <table class="table table-bordered" id="dynamic_field">
-<?php 
-$idx = 0;
-foreach($ingredients as $ing): 
-    $displayValue = '';
-    if (!empty($ing['quantityOriginal'])) {
-        $displayValue = $ing['quantityOriginal'] . ' ' . $ing['name'];
-    } else {
-        $displayValue = $ing['name'];
-    }
-?>
-<tr id="row_exist_<?php echo $idx; ?>">
-<td><input type="text" name="fitem[]" value="<?php echo htmlspecialchars($displayValue); ?>" class="form-control name_list" autocomplete="off" /></td>
-<td>
-    <?php if($idx == 0): ?>
-        <button type="button" name="add" id="add" class="btn btn-success">Add More</button>
-    <?php else: ?>
-        <button type="button" class="btn btn-danger btn_remove" id="_exist_<?php echo $idx; ?>">X</button>
-    <?php endif; ?>
-</td>
-</tr>
-<?php $idx++; endforeach;
-if ($idx == 0): ?>
-<tr>
-<td><input type="text" name="fitem[]" placeholder="Enter Recipe Ingredient" class="form-control name_list" autocomplete="off" /></td>
-<td><button type="button" name="add" id="add" class="btn btn-success">Add More</button></td>
-</tr>
-<?php endif; ?>
-                                    </table>
+                            <?php if ($msg): ?>
+                                <div class="alert alert-<?php echo $msgType; ?> alert-dismissible fade show">
+                                    <?php echo htmlspecialchars($msg); ?>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
-                            </div>
+                            <?php endif; ?>
 
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">Description</label>
-                                <div class="col-sm-6">
-                                    <textarea class="form-control" id="description" name="description" rows="10" required><?php echo htmlspecialchars($recipeData['recipeDescription']);?></textarea>
-                                </div>
-                            </div>
+                            <?php if ($recipeData): ?>
+                            <form class="form-horizontal bucket-form" method="post" enctype="multipart/form-data">
 
-                            <div class="form-group">
-                                <label class=" col-sm-3 control-label">Pictures</label>
-                                <div class="col-sm-6">
-                                    <img src="../user/images/<?php echo htmlspecialchars($recipeData['recipePicture']);?>" width="300"><br /><br />
-                                    <input type="hidden" name="image" id="image" value="<?php echo htmlspecialchars($recipeData['recipePicture']);?>">
-                                    <input type="file" class="form-control" name="images" id="images">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><?php _e('Recipe Title'); ?></label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" name="recipetitle" value="<?php echo htmlspecialchars($recipeData['recipeTitle']); ?>" type="text" required>
+                                    </div>
                                 </div>
-                            </div>
-                            <hr />
-                            
-                            <div class="form-group">
-                                <div class="col-lg-offset-3 col-sm-6">
-                                    <button class="btn btn-primary" type="submit" name="update">Update</button>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><?php _e('Recipe Preparation Time'); ?> <small>(<?php _e('Minutes'); ?>)</small></label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" name="recipeprep" value="<?php echo htmlspecialchars($recipeData['recipePrepTime']); ?>" pattern="[0-9]+" type="text" required title="Numbers only">
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
-                        <?php else: ?>
-                        <p class="text-danger text-center">Recipe not found.</p>
-                        <?php endif; ?>
-                    </div>
-                </section>
-                <!-- page end-->
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><?php _e('Recipe Cook Time'); ?> <small>(<?php _e('Minutes'); ?>)</small></label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" name="recipecooktime" value="<?php echo htmlspecialchars($recipeData['recipeCookTime']); ?>" pattern="[0-9]+" type="text" required title="Numbers only">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><?php _e('Yields'); ?></label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" name="yields" value="<?php echo htmlspecialchars($recipeData['recipeYields']); ?>" pattern="[0-9]+" type="text" required title="Numbers only">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><?php _e('Recipe Ingredients'); ?></label>
+                                    <div class="col-sm-6">
+                                        <table class="table table-bordered" id="dynamic_field">
+                                        <?php
+                                        $idx = 0;
+                                        foreach($ingredients as $ing):
+                                            $displayValue = '';
+                                            if (!empty($ing['quantityOriginal'])) {
+                                                $displayValue = $ing['quantityOriginal'] . ' ' . $ing['name'];
+                                            } else {
+                                                $displayValue = $ing['name'];
+                                            }
+                                        ?>
+                                        <tr id="row_exist_<?php echo $idx; ?>">
+                                            <td><input type="text" name="fitem[]" value="<?php echo htmlspecialchars($displayValue); ?>" class="form-control name_list" autocomplete="off" /></td>
+                                            <td>
+                                                <?php if($idx == 0): ?>
+                                                    <button type="button" name="add" id="add" class="btn btn-success"><?php _e('Add More'); ?></button>
+                                                <?php else: ?>
+                                                    <button type="button" class="btn btn-danger btn_remove" id="_exist_<?php echo $idx; ?>">X</button>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                        <?php $idx++; endforeach;
+                                        if ($idx == 0): ?>
+                                        <tr>
+                                            <td><input type="text" name="fitem[]" placeholder="<?php echo htmlspecialchars(__('Enter Recipe Ingredient')); ?>" class="form-control name_list" autocomplete="off" /></td>
+                                            <td><button type="button" name="add" id="add" class="btn btn-success"><?php _e('Add More'); ?></button></td>
+                                        </tr>
+                                        <?php endif; ?>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><?php _e('Description'); ?></label>
+                                    <div class="col-sm-6">
+                                        <textarea class="form-control" name="description" rows="10" required><?php echo htmlspecialchars($recipeData['recipeDescription']); ?></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><?php _e('Pictures'); ?></label>
+                                    <div class="col-sm-6">
+                                        <img src="../user/images/<?php echo htmlspecialchars($recipeData['recipePicture']); ?>" width="300"><br /><br />
+                                        <input type="hidden" name="image" value="<?php echo htmlspecialchars($recipeData['recipePicture']); ?>">
+                                        <input type="file" class="form-control" name="images" id="images">
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="form-group">
+                                    <div class="col-lg-offset-3 col-sm-6">
+                                        <button class="btn btn-primary" type="submit" name="update"><?php _e('Update'); ?></button>
+                                    </div>
+                                </div>
+
+                            </form>
+                            <?php else: ?>
+                                <p class="text-danger text-center"><?php _e('Recipe not found.'); ?></p>
+                            <?php endif; ?>
+
+                        </div>
+                    </section>
+                </div>
             </div>
-        </section>
-        
+        </div>
+
         <!-- footer -->
         <?php include_once('includes/footer.php');?>
-        <!-- / footer -->
     </section>
-
-<!--main content end-->
+</section>
 </section>
 <script src="../dashboard-assets/js/bootstrap.bundle.min.js"></script>
 <script src="../dashboard-assets/js/app.js"></script>

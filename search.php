@@ -1,4 +1,4 @@
-<?php include('includes/dbconnection.php');?>
+<?php include('includes/dbconnection.php'); require_once('includes/lang.php');?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,8 +22,8 @@
         <div class="page-header-overlay"></div>
         <div class="container">
             <div class="page-header-content">
-                <span class="page-tag">Search</span>
-                <h1>Results for "<?php echo htmlspecialchars($search);?>"</h1>
+                <span class="page-tag"><?php _e('Search'); ?></span>
+                <h1><?php _e('Results for'); ?> "<?php echo htmlspecialchars($search);?>"</h1>
             </div>
         </div>
     </section>
@@ -37,7 +37,7 @@ $count = mysqli_num_rows($ret);
 if ($count > 0) {
 ?>
             <div class="modern-section-heading">
-                <p><?php echo $count;?> recipe<?php echo $count > 1 ? 's' : '';?> found</p>
+                <p><?php echo $count; ?> <?php echo $count > 1 ? __('recipes found') : __('recipe found'); ?></p>
             </div>
             <div class="recipes-grid">
 <?php while ($row = mysqli_fetch_array($ret)) { ?>
@@ -45,7 +45,7 @@ if ($count > 0) {
                     <div class="recipe-card-image">
                         <img src="user/images/<?php echo htmlspecialchars($row['recipePicture']);?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
                         <div class="recipe-card-overlay">
-                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn">View Recipe</a>
+                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn"><?php _e('View Recipe'); ?></a>
                         </div>
                     </div>
                     <div class="recipe-card-body">
@@ -63,9 +63,9 @@ if ($count > 0) {
 <?php } else { ?>
             <div class="empty-state">
                 <div class="empty-state-icon">🔍</div>
-                <h3>No recipes found</h3>
-                <p>We couldn't find any recipes matching "<strong><?php echo htmlspecialchars($search);?></strong>"</p>
-                <a href="recipes.php" class="btn-modern btn-primary-modern" style="margin-top:20px;">Browse All Recipes</a>
+                <h3><?php _e('No recipes found'); ?></h3>
+                <p><?php _e('We couldn\'t find any recipes matching'); ?> "<strong><?php echo htmlspecialchars($search);?></strong>"</p>
+                <a href="recipes.php" class="btn-modern btn-primary-modern" style="margin-top:20px;"><?php _e('Browse All Recipes'); ?></a>
             </div>
 <?php } ?>
         </div>

@@ -3643,3 +3643,32 @@ span.calorie-badge,
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(45, 106, 79, 0.4);
 }
+
+/* Language switcher */
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.lang-switcher a {
+  color: var(--gray-700);
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+.lang-switcher a.active {
+  color: var(--primary);
+  background: rgba(45, 106, 79, 0.1);
+}
+.lang-switcher a:hover:not(.active) {
+  color: var(--primary);
+}
+.lang-switcher .lang-sep {
+  color: var(--gray-500);
+  font-weight: 300;
+}

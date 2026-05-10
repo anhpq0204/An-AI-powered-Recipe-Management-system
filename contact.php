@@ -1,4 +1,5 @@
 <?php include('includes/dbconnection.php');
+require_once('includes/lang.php');
 
 if(isset($_POST['submit'])) {
     $fname=$_POST['fname'];
@@ -7,10 +8,10 @@ if(isset($_POST['submit'])) {
     $message=$_POST['message'];
     $query=mysqli_query($con, "insert into enquiries(userName,userEmail,subject,commentMessage) value('$fname','$emailid','$subject','$message' )");
     if ($query) {
-        echo "<script>alert('Enquiry sent successfully. We will contact you shortly');</script>";
+        echo "<script>alert('" . addslashes(__('Enquiry sent successfully. We will contact you shortly')) . "');</script>";
         echo "<script>window.location.href ='contact.php'</script>";
     } else {
-        echo "<script>alert('Something went wrong. Please try again.');</script>";
+        echo "<script>alert('" . addslashes(__('Something went wrong. Please try again.')) . "');</script>";
     }
 }
 ?>
@@ -35,9 +36,9 @@ if(isset($_POST['submit'])) {
         <div class="page-header-overlay"></div>
         <div class="container">
             <div class="page-header-content">
-                <span class="page-tag">Contact</span>
-                <h1>Get In Touch</h1>
-                <p>We'd love to hear from you</p>
+                <span class="page-tag"><?php _e('Contact'); ?></span>
+                <h1><?php _e('Get In Touch'); ?></h1>
+                <p><?php _e('We\'d love to hear from you'); ?></p>
             </div>
         </div>
     </section>
@@ -54,7 +55,7 @@ while ($row = mysqli_fetch_array($ret)) {
 ?>
                     <div class="contact-info-card">
                         <div class="modern-section-heading" style="text-align: left; margin-bottom: 30px;">
-                            <span class="section-tag" style="margin-bottom: 15px;">Contact Info</span>
+                            <span class="section-tag" style="margin-bottom: 15px;"><?php _e('Contact Info'); ?></span>
                             <h2 style="font-size: 32px;"><?php echo htmlspecialchars($row['PageTitle']);?></h2>
                         </div>
                         <div class="contact-text">
@@ -67,31 +68,31 @@ while ($row = mysqli_fetch_array($ret)) {
                 <!-- Contact Form -->
                 <div class="col-12 col-lg-7">
                     <div class="recipe-detail-card" style="margin-bottom: 0;">
-                        <h3 style="margin-bottom: 25px;">Send a Message</h3>
+                        <h3 style="margin-bottom: 25px;"><?php _e('Send a Message'); ?></h3>
                         <form method="post" class="modern-form">
                             <div class="row">
                                 <div class="col-12 col-md-6">
                                     <div class="form-group-modern">
-                                        <input type="text" name="fname" placeholder="Your Name" required>
+                                        <input type="text" name="fname" placeholder="<?php echo htmlspecialchars(__('Your Name')); ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="form-group-modern">
-                                        <input type="email" name="emailid" placeholder="Your Email" required>
+                                        <input type="email" name="emailid" placeholder="<?php echo htmlspecialchars(__('Your Email')); ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group-modern">
-                                        <input type="text" name="subject" placeholder="Subject" required>
+                                        <input type="text" name="subject" placeholder="<?php echo htmlspecialchars(__('Subject')); ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group-modern">
-                                        <textarea name="message" rows="5" placeholder="Message" required></textarea>
+                                        <textarea name="message" rows="5" placeholder="<?php echo htmlspecialchars(__('Message')); ?>" required></textarea>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <button type="submit" name="submit" class="btn-modern btn-primary-modern">Send Message</button>
+                                    <button type="submit" name="submit" class="btn-modern btn-primary-modern"><?php _e('Send Message'); ?></button>
                                 </div>
                             </div>
                         </form>
@@ -105,8 +106,8 @@ while ($row = mysqli_fetch_array($ret)) {
     <section class="modern-gallery-section">
         <div class="container">
             <div class="modern-section-heading">
-                <span class="section-tag">Gallery</span>
-                <h2>Food <span class="highlight">Inspiration</span></h2>
+                <span class="section-tag"><?php _e('Gallery'); ?></span>
+                <h2><?php echo __('Food <span class="highlight">Inspiration</span>'); ?></h2>
             </div>
         </div>
         <div class="gallery-grid">

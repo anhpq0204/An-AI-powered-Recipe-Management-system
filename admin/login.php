@@ -1,4 +1,5 @@
 <?php
+require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 
@@ -13,7 +14,7 @@ if(isset($_POST['login'])) {
       header('location:dashboard.php');
       exit;
     } else {
-        $msg="Invalid Admin Details. Please try again.";
+        $msg=__('Invalid Admin Details. Please try again.');
     }
 }
 ?>
@@ -23,15 +24,9 @@ if(isset($_POST['login'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Food Recipe System | Admin Login</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="../css/font-awesome.min.css" rel="stylesheet">
-    <!-- Modern UI CSS -->
-    <link href="../css/modern.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="../style.css">
+
     <style>
-        /* Admin specific override to differentiate from regular users */
         .auth-overlay-admin {
             background: linear-gradient(135deg, rgba(33, 37, 41, 0.95) 0%, rgba(52, 58, 64, 0.9) 100%);
         }
@@ -51,33 +46,33 @@ if(isset($_POST['login'])) {
         <div class="auth-overlay auth-overlay-admin"></div>
         <div class="auth-card">
             <div class="auth-header">
-                <h2>Admin Portal</h2>
-                <p>Sign in to manage the Food Recipe System</p>
+                <h2><?php _e('Admin Portal'); ?></h2>
+                <p><?php _e('Sign in to manage the Food Recipe System'); ?></p>
             </div>
-            
+
             <?php if($msg) { ?>
             <div class="auth-alert">
-                <?php echo $msg; ?>
+                <?php echo htmlspecialchars($msg); ?>
             </div>
             <?php } ?>
 
             <form action="" method="post" name="login" class="auth-form">
                 <div class="form-group-modern">
-                    <input type="text" name="username" placeholder="Username" required>
+                    <input type="text" name="username" placeholder="<?php echo htmlspecialchars(__('Username')); ?>" required>
                 </div>
                 <div class="form-group-modern">
-                    <input type="password" name="password" placeholder="Password" required>
-                </div>
-                
-                <div style="text-align: right; margin-bottom: 20px;">
-                    <a href="forgot-password.php" style="color: var(--gray-700); font-size: 14px; text-decoration: none;">Forgot Password?</a>
+                    <input type="password" name="password" placeholder="<?php echo htmlspecialchars(__('Password')); ?>" required>
                 </div>
 
-                <button type="submit" name="login" class="btn-modern btn-primary-modern btn-admin">Sign In as Admin</button>
+                <div style="text-align: right; margin-bottom: 20px;">
+                    <a href="forgot-password.php" style="color: var(--gray-700); font-size: 14px; text-decoration: none;"><?php _e('Forgot Password?'); ?></a>
+                </div>
+
+                <button type="submit" name="login" class="btn-modern btn-primary-modern btn-admin"><?php _e('Sign In as Admin'); ?></button>
             </form>
 
             <div class="auth-footer">
-                <a href="../index.php" class="auth-home-link"><i class="fa fa-home"></i> Back to Frontend</a>
+                <a href="../index.php" class="auth-home-link"><i class="fa fa-home"></i> <?php _e('Back to Frontend'); ?></a>
             </div>
         </div>
     </div>

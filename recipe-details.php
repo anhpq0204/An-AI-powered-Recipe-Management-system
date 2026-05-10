@@ -1,5 +1,6 @@
 <?php include('includes/dbconnection.php');
 include('includes/ai-helper.php');
+require_once('includes/lang.php');
 
 if(isset($_POST['submit'])) {
     $fname = trim($_POST['fname']);
@@ -9,9 +10,9 @@ if(isset($_POST['submit'])) {
     $stmt = $con->prepare("INSERT INTO comments(recipeId, userName, userEmail, commentMessage) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("isss", $recipeid, $fname, $emailid, $message);
     if ($stmt->execute()) {
-        echo "<script>alert('Comment added successfully. After moderation it will show');</script>";
+        echo "<script>alert('" . addslashes(__('Comment added successfully. After moderation it will show')) . "');</script>";
     } else {
-        echo "<script>alert('Something went wrong. Please try again.');</script>";
+        echo "<script>alert('" . addslashes(__('Something went wrong. Please try again.')) . "');</script>";
     }
     $stmt->close();
 }
@@ -44,15 +45,15 @@ while ($row = mysqli_fetch_array($ret)) {
         <div class="page-header-overlay"></div>
         <div class="container">
             <div class="page-header-content">
-                <span class="page-tag">Recipe</span>
+                <span class="page-tag"><?php _e('Recipe'); ?></span>
                 <h1><?php echo htmlspecialchars($row['recipeTitle']);?></h1>
                 <div class="recipe-detail-meta">
                     <span>📅 <?php echo htmlspecialchars($row['postingDate']);?></span>
-                    <?php if($row['recipePrepTime']) { ?><span>⏱️ Prep: <?php echo htmlspecialchars($row['recipePrepTime']);?> min</span><?php } ?>
-                    <?php if($row['recipeCookTime']) { ?><span>🍳 Cook: <?php echo htmlspecialchars($row['recipeCookTime']);?> min</span><?php } ?>
-                    <?php if($row['recipeYields']) { ?><span>🍽️ Yields: <?php echo htmlspecialchars($row['recipeYields']);?> servings</span><?php } ?>
+                    <?php if($row['recipePrepTime']) { ?><span>⏱️ <?php _e('Prep'); ?>: <?php echo htmlspecialchars($row['recipePrepTime']);?> <?php _e('min'); ?></span><?php } ?>
+                    <?php if($row['recipeCookTime']) { ?><span>🍳 <?php _e('Cook'); ?>: <?php echo htmlspecialchars($row['recipeCookTime']);?> <?php _e('min'); ?></span><?php } ?>
+                    <?php if($row['recipeYields']) { ?><span>🍽️ <?php _e('Yields'); ?>: <?php echo htmlspecialchars($row['recipeYields']);?> <?php _e('servings'); ?></span><?php } ?>
                     <?php if($row['totalCalories'] > 0) { ?>
-                    <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
+                    <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> <?php _e('cal'); ?></span>
                     <?php } ?>
                 </div>
             </div>
@@ -66,7 +67,7 @@ while ($row = mysqli_fetch_array($ret)) {
                 <!-- Main Content -->
                 <div class="col-12 col-lg-8">
                     <div class="recipe-detail-card">
-                        <h3>Description</h3>
+                        <h3><?php _e('Description'); ?></h3>
                         <div class="recipe-description">
                             <?php echo nl2br(htmlspecialchars($row['recipeDescription']));?>
                         </div>
@@ -76,17 +77,18 @@ while ($row = mysqli_fetch_array($ret)) {
                 <!-- Sidebar - Ingredients -->
                 <div class="col-12 col-lg-4">
                     <div class="recipe-detail-card ingredients-card">
-                        <h3>🥘 Ingredients</h3>
+                        <h3><?php _e('🥘 Ingredients'); ?></h3>
                         <?php if($row['totalCalories'] > 0): ?>
                         <div class="calorie-summary">
-                            <span class="calorie-total">🔥 <?php echo intval($row['totalCalories']);?> calories</span>
-                            <small class="text-muted">estimated total</small>
+                            <span class="calorie-total">🔥 <?php echo intval($row['totalCalories']);?> <?php _e('calories'); ?></span>
+                            <small class="text-muted"><?php _e('estimated total'); ?></small>
                         </div>
                         <?php endif; ?>
                         <ul class="ingredients-list">
 <?php
 foreach ($ingredients as $ing) {
-    $ingName = !empty($ing['name_vi']) ? $ing['name_vi'] : $ing['name'];
+    $lang = lang_current();
+    $ingName = ($lang === 'vi' && !empty($ing['name_vi'])) ? $ing['name_vi'] : $ing['name'];
     $displayText = '';
     if (!empty($ing['quantityOriginal'])) {
         $displayText = $ing['quantityOriginal'] . ' ' . $ingName;
@@ -117,26 +119,26 @@ foreach ($ingredients as $ing) {
             <div class="row">
                 <div class="col-12 col-lg-8">
                     <div class="recipe-detail-card">
-                        <h3>💬 Leave a Comment</h3>
+                        <h3><?php _e('💬 Leave a Comment'); ?></h3>
                         <form method="post" class="modern-form">
                             <div class="row">
                                 <div class="col-12 col-md-6">
                                     <div class="form-group-modern">
-                                        <input type="text" name="fname" placeholder="Your Name" required>
+                                        <input type="text" name="fname" placeholder="<?php echo htmlspecialchars(__('Your Name')); ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="form-group-modern">
-                                        <input type="email" name="emailid" placeholder="Your Email" required>
+                                        <input type="email" name="emailid" placeholder="<?php echo htmlspecialchars(__('Your Email')); ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group-modern">
-                                        <textarea name="message" rows="5" placeholder="Write your comment..." required></textarea>
+                                        <textarea name="message" rows="5" placeholder="<?php echo htmlspecialchars(__('Write your comment...')); ?>" required></textarea>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <button type="submit" name="submit" class="btn-modern btn-primary-modern">Post Comment</button>
+                                    <button type="submit" name="submit" class="btn-modern btn-primary-modern"><?php _e('Post Comment'); ?></button>
                                 </div>
                             </div>
                         </form>

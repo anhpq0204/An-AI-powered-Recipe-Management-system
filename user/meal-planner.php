@@ -1,4 +1,5 @@
 <?php
+require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
@@ -11,7 +12,7 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Food Recipe System | Meal Planner</title>
+    <title>Food Recipe System | <?php _e('Meal Planner'); ?></title>
     <style>
         .recipe-search-result {
             display:flex; align-items:center; gap:12px;
@@ -49,10 +50,10 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 
         <div class="d-flex align-items-center justify-content-between mb-1">
             <h1 class="user-page-title mb-0">
-                Meal Planner
-                <small>Select recipes and get your shopping list</small>
+                <?php _e('Meal Planner'); ?>
+                <small><?php _e('Select recipes and get your shopping list'); ?></small>
             </h1>
-            <a href="my-meal-plans.php" class="btn btn-sm btn-outline-secondary">📋 My Plans</a>
+            <a href="my-meal-plans.php" class="btn btn-sm btn-outline-secondary"><?php _e('📋 My Plans'); ?></a>
         </div>
 
         <div class="row g-4 mt-1">
@@ -60,17 +61,17 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
             <!-- LEFT: Recipe Picker -->
             <div class="col-12 col-lg-5">
                 <div class="user-content-card">
-                    <h5 class="mb-3">🔍 Search Recipes</h5>
+                    <h5 class="mb-3"><?php _e('🔍 Search Recipes'); ?></h5>
                     <input type="text" id="recipeSearchInput" class="form-control mb-3"
-                           placeholder="Type recipe name..." autocomplete="off">
+                           placeholder="<?php echo htmlspecialchars(__('Type recipe name...')); ?>" autocomplete="off">
                     <div id="searchResultsBox">
-                        <p class="spinner-text text-center">Start typing to search recipes…</p>
+                        <p class="spinner-text text-center"><?php _e('Start typing to search recipes…'); ?></p>
                     </div>
                 </div>
 
                 <!-- Current selection -->
                 <div class="user-content-card mt-3" id="selectionPanel" style="display:none;">
-                    <h5 class="mb-3">✅ Selected Recipes <span class="badge bg-primary" id="selectionCount">0</span></h5>
+                    <h5 class="mb-3"><?php _e('✅ Selected Recipes'); ?> <span class="badge bg-primary" id="selectionCount">0</span></h5>
                     <div id="selectionList"></div>
                 </div>
             </div>
@@ -79,20 +80,20 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
             <div class="col-12 col-lg-7">
                 <div class="user-content-card">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="mb-0">🛒 Shopping List</h5>
+                        <h5 class="mb-0"><?php _e('🛒 Shopping List'); ?></h5>
                         <span id="calorieBadge" class="badge bg-warning text-dark" style="display:none;"></span>
                     </div>
 
                     <div id="ingredientPanel">
-                        <p class="text-muted text-center py-4">Add recipes on the left to see your shopping list.</p>
+                        <p class="text-muted text-center py-4"><?php _e('Add recipes on the left to see your shopping list.'); ?></p>
                     </div>
 
                     <!-- Save plan form -->
                     <div id="savePlanSection" style="display:none; border-top:1px solid #eee; padding-top:16px; margin-top:16px;">
                         <div class="d-flex gap-2">
                             <input type="text" id="planNameInput" class="form-control"
-                                   placeholder="Plan name (e.g. Week 1, Family Dinner)" maxlength="200">
-                            <button id="savePlanBtn" class="btn btn-primary" style="white-space:nowrap;">💾 Save Plan</button>
+                                   placeholder="<?php echo htmlspecialchars(__('Plan name (e.g. Week 1, Family Dinner)')); ?>" maxlength="200">
+                            <button id="savePlanBtn" class="btn btn-primary" style="white-space:nowrap;"><?php _e('💾 Save Plan'); ?></button>
                         </div>
                         <div id="saveAlert" class="save-alert alert"></div>
                     </div>
@@ -110,6 +111,28 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 <script src="../dashboard-assets/js/app.js"></script>
 <script>
 (function() {
+    // PHP-generated i18n strings for JS
+    var i18n = {
+        startTyping:       '<?php echo addslashes(__('Start typing to search recipes…')); ?>',
+        searching:         '<?php echo addslashes(__('⏳ Searching…')); ?>',
+        noRecipesFound:    '<?php echo addslashes(__('No recipes found.')); ?>',
+        errorLoadRecipes:  '<?php echo addslashes(__('Error loading recipes.')); ?>',
+        loadingIngredients:'<?php echo addslashes(__('⏳ Loading ingredients…')); ?>',
+        noIngredients:     '<?php echo addslashes(__('No ingredient data for selected recipes yet.')); ?>',
+        errorLoadIngr:     '<?php echo addslashes(__('Error loading ingredients.')); ?>',
+        addToList:         '<?php echo addslashes(__('Add recipes on the left to see your shopping list.')); ?>',
+        checkOff:          '<?php echo addslashes(__('Check off as you gather each ingredient.')); ?>',
+        added:             '<?php echo addslashes(__('✓ Added')); ?>',
+        add:               '<?php echo addslashes(__('+ Add')); ?>',
+        saving:            '<?php echo addslashes(__('⏳ Saving…')); ?>',
+        savePlan:          '<?php echo addslashes(__('💾 Save Plan')); ?>',
+        planSaved:         '<?php echo addslashes(__('Plan saved!')); ?>',
+        viewInMyPlans:     '<?php echo addslashes(__('View in My Plans')); ?>',
+        viewPlan:          '<?php echo addslashes(__('View plan')); ?>',
+        couldNotSave:      '<?php echo addslashes(__('Could not save plan.')); ?>',
+        errorSave:         '<?php echo addslashes(__('Error saving plan. Please try again.')); ?>',
+    };
+
     var searchInput   = document.getElementById('recipeSearchInput');
     var resultsBox    = document.getElementById('searchResultsBox');
     var selectionPanel= document.getElementById('selectionPanel');
@@ -146,13 +169,13 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
     });
 
     function loadRecipes(query) {
-        resultsBox.innerHTML = '<p class="spinner-text text-center">⏳ Searching…</p>';
+        resultsBox.innerHTML = '<p class="spinner-text text-center">' + escHtml(i18n.searching) + '</p>';
         fetch('../api/search-recipes.php?q=' + encodeURIComponent(query))
         .then(function(r) { return r.json(); })
         .then(function(data) {
             resultsBox.innerHTML = '';
             if (data.length === 0) {
-                resultsBox.innerHTML = '<p class="spinner-text text-center">No recipes found.</p>';
+                resultsBox.innerHTML = '<p class="spinner-text text-center">' + escHtml(i18n.noRecipesFound) + '</p>';
                 return;
             }
             data.forEach(function(r) {
@@ -171,12 +194,12 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
                     'data-id="' + r.id + '" data-title="' + escHtml(r.title) + '" ' +
                     'data-picture="' + escHtml(r.picture) + '" ' +
                     'data-preptime="' + r.prepTime + '" data-cal="' + r.totalCalories + '">' +
-                    (isAdded ? '✓ Added' : '+ Add') + '</button>';
+                    (isAdded ? i18n.added : i18n.add) + '</button>';
                 resultsBox.appendChild(card);
             });
         })
         .catch(function() {
-            resultsBox.innerHTML = '<p class="spinner-text text-center text-danger">Error loading recipes.</p>';
+            resultsBox.innerHTML = '<p class="spinner-text text-center text-danger">' + escHtml(i18n.errorLoadRecipes) + '</p>';
         });
     }
 
@@ -192,7 +215,7 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
             calories:parseInt(btn.dataset.cal, 10),
         };
         btn.className = 'btn btn-sm btn-success disabled';
-        btn.textContent = '✓ Added';
+        btn.textContent = i18n.added;
         renderSelection();
         fetchIngredients();
     });
@@ -226,7 +249,7 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
         var searchBtn = resultsBox.querySelector('button[data-id="' + id + '"]');
         if (searchBtn) {
             searchBtn.className = 'btn btn-sm btn-outline-primary';
-            searchBtn.textContent = '+ Add';
+            searchBtn.textContent = i18n.add;
         }
         renderSelection();
         fetchIngredients();
@@ -236,24 +259,24 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
     function fetchIngredients() {
         var ids = Object.keys(selected);
         if (ids.length === 0) {
-            ingredientPanel.innerHTML = '<p class="text-muted text-center py-4">Add recipes on the left to see your shopping list.</p>';
+            ingredientPanel.innerHTML = '<p class="text-muted text-center py-4">' + escHtml(i18n.addToList) + '</p>';
             calorieBadge.style.display = 'none';
             return;
         }
-        ingredientPanel.innerHTML = '<p class="spinner-text text-center">⏳ Loading ingredients…</p>';
+        ingredientPanel.innerHTML = '<p class="spinner-text text-center">' + escHtml(i18n.loadingIngredients) + '</p>';
         fetch('../api/meal-plan-ingredients.php?recipe_ids=' + ids.join(','))
         .then(function(r) { return r.json(); })
         .then(function(data) {
             renderIngredients(data);
         })
         .catch(function() {
-            ingredientPanel.innerHTML = '<p class="text-danger text-center">Error loading ingredients.</p>';
+            ingredientPanel.innerHTML = '<p class="text-danger text-center">' + escHtml(i18n.errorLoadIngr) + '</p>';
         });
     }
 
     function renderIngredients(data) {
         if (!data.ingredients || data.ingredients.length === 0) {
-            ingredientPanel.innerHTML = '<p class="text-muted text-center py-3">No ingredient data for selected recipes yet.</p>';
+            ingredientPanel.innerHTML = '<p class="text-muted text-center py-3">' + escHtml(i18n.noIngredients) + '</p>';
             calorieBadge.style.display = 'none';
             return;
         }
@@ -264,7 +287,7 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
             calorieBadge.style.display = 'none';
         }
 
-        var html = '<p class="text-muted small mb-2">Check off as you gather each ingredient.</p><ul class="list-unstyled mb-0">';
+        var html = '<p class="text-muted small mb-2">' + escHtml(i18n.checkOff) + '</p><ul class="list-unstyled mb-0">';
         data.ingredients.forEach(function(ing) {
             var nameDisplay = ing.name_vi
                 ? escHtml(ing.name_vi) + ' <span class="text-muted small">/ ' + escHtml(ing.name) + '</span>'
@@ -301,7 +324,7 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
         if (ids.length === 0) return;
 
         savePlanBtn.disabled = true;
-        savePlanBtn.textContent = '⏳ Saving…';
+        savePlanBtn.textContent = i18n.saving;
         saveAlert.style.display = 'none';
 
         var form = new FormData();
@@ -313,23 +336,24 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
         .then(function(data) {
             if (data.success) {
                 saveAlert.className = 'save-alert alert alert-success';
-                saveAlert.innerHTML = '✅ Plan saved! <a href="my-meal-plans.php">View in My Plans</a> or <a href="view-meal-plan.php?plan_id=' + data.plan_id + '">View plan</a>.';
+                saveAlert.innerHTML = '✅ ' + i18n.planSaved + ' <a href="my-meal-plans.php">' + i18n.viewInMyPlans + '</a> ' +
+                    'or <a href="view-meal-plan.php?plan_id=' + data.plan_id + '">' + i18n.viewPlan + '</a>.';
                 saveAlert.style.display = 'block';
                 planNameInput.value = '';
             } else {
                 saveAlert.className = 'save-alert alert alert-danger';
-                saveAlert.textContent = '❌ ' + (data.error || 'Could not save plan.');
+                saveAlert.textContent = '❌ ' + (data.error || i18n.couldNotSave);
                 saveAlert.style.display = 'block';
             }
         })
         .catch(function() {
             saveAlert.className = 'save-alert alert alert-danger';
-            saveAlert.textContent = '❌ Error saving plan. Please try again.';
+            saveAlert.textContent = '❌ ' + i18n.errorSave;
             saveAlert.style.display = 'block';
         })
         .finally(function() {
             savePlanBtn.disabled = false;
-            savePlanBtn.textContent = '💾 Save Plan';
+            savePlanBtn.textContent = i18n.savePlan;
         });
     });
 

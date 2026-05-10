@@ -1,4 +1,5 @@
-<?php require_once('../includes/session.php');
+<?php require_once('../includes/lang.php');
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
   header('location:logout.php');
@@ -21,8 +22,8 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
     <section class="wrapper">
 
         <h1 class="admin-page-title">
-            Dashboard
-            <small>Welcome back, <?php
+            <?php _e('Dashboard'); ?>
+            <small><?php _e('Welcome back,'); ?> <?php
                 $adid = $_SESSION['frsaid'];
                 $ret = mysqli_query($con,"SELECT AdminName FROM admins WHERE ID='$adid'");
                 $row = mysqli_fetch_array($ret);
@@ -41,7 +42,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="reg-users.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-users"><i class="fa fa-users"></i></div>
                 <div class="admin-stat-info">
-                    <h4>Registered Users</h4>
+                    <h4><?php _e('Registered Users'); ?></h4>
                     <h2><?php echo $usercounts;?></h2>
                 </div>
             </a>
@@ -54,7 +55,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="listed-recipes.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-recipes"><i class="fa fa-cutlery"></i></div>
                 <div class="admin-stat-info">
-                    <h4>Listed Recipes</h4>
+                    <h4><?php _e('Listed Recipes'); ?></h4>
                     <h2><?php echo $totallistedfood;?></h2>
                 </div>
             </a>
@@ -67,7 +68,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="all-comments.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-comments"><i class="fa fa-comments"></i></div>
                 <div class="admin-stat-info">
-                    <h4>All Comments</h4>
+                    <h4><?php _e('All Comments'); ?></h4>
                     <h2><?php echo $allcomments;?></h2>
                 </div>
             </a>
@@ -80,7 +81,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="new-comments.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-new"><i class="fa fa-clock-o"></i></div>
                 <div class="admin-stat-info">
-                    <h4>New Comments</h4>
+                    <h4><?php _e('New Comments'); ?></h4>
                     <h2><?php echo $newcomments;?></h2>
                 </div>
             </a>
@@ -93,7 +94,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="rejected-comments.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-rejected"><i class="fa fa-times-circle"></i></div>
                 <div class="admin-stat-info">
-                    <h4>Rejected Comments</h4>
+                    <h4><?php _e('Rejected Comments'); ?></h4>
                     <h2><?php echo $rejected;?></h2>
                 </div>
             </a>
@@ -106,7 +107,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="approved-comments.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-approved"><i class="fa fa-check-circle"></i></div>
                 <div class="admin-stat-info">
-                    <h4>Approved Comments</h4>
+                    <h4><?php _e('Approved Comments'); ?></h4>
                     <h2><?php echo $approved;?></h2>
                 </div>
             </a>
@@ -119,7 +120,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="unreadenq.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-unread"><i class="fa fa-envelope"></i></div>
                 <div class="admin-stat-info">
-                    <h4>Unread Enquiry</h4>
+                    <h4><?php _e('Unread Enquiry'); ?></h4>
                     <h2><?php echo $unreadenq;?></h2>
                 </div>
             </a>
@@ -132,7 +133,7 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
             <a href="readenq.php" class="admin-stat-card">
                 <div class="admin-stat-icon bg-read"><i class="fa fa-envelope-open"></i></div>
                 <div class="admin-stat-info">
-                    <h4>Read Enquiry</h4>
+                    <h4><?php _e('Read Enquiry'); ?></h4>
                     <h2><?php echo $readenq;?></h2>
                 </div>
             </a>

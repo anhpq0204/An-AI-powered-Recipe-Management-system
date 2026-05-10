@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../includes/lang.php';
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once(__DIR__ . '/../../includes/dbconnection.php');
 ?>
@@ -43,9 +44,9 @@ if ($uid) {
                     <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu extended logout">
-                    <li><a href="profile.php"><i class="fa fa-user"></i> Profile</a></li>
-                    <li><a href="change-password.php"><i class="fa fa-lock"></i> Change Password</a></li>
-                    <li><a href="logout.php"><i class="fa fa-sign-out"></i> Log Out</a></li>
+                    <li><a href="profile.php"><i class="fa fa-user"></i> <?php _e('Profile'); ?></a></li>
+                    <li><a href="change-password.php"><i class="fa fa-lock"></i> <?php _e('Change Password'); ?></a></li>
+                    <li><a href="logout.php"><i class="fa fa-sign-out"></i> <?php _e('Log Out'); ?></a></li>
                 </ul>
             </li>
         </ul>

@@ -1,4 +1,4 @@
-<?php include('includes/dbconnection.php');?>
+<?php include('includes/dbconnection.php'); require_once('includes/lang.php');?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,12 +35,12 @@
         </div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <span class="hero-badge">🍳 Welcome to FRS</span>
-            <h1>Discover <span class="highlight">Delicious</span> Recipes</h1>
-            <p>Explore hundreds of recipes from talented home cooks. Share your favorites and inspire others.</p>
+            <span class="hero-badge"><?php _e('🍳 Welcome to FRS'); ?></span>
+            <h1><?php echo __('Discover <span class="highlight">Delicious</span> Recipes'); ?></h1>
+            <p><?php _e('Explore hundreds of recipes from talented home cooks. Share your favorites and inspire others.'); ?></p>
             <div class="hero-buttons">
-                <a href="recipes.php" class="btn-modern btn-primary-modern">Explore Recipes</a>
-                <a href="user/login.php" class="btn-modern btn-outline-modern">Share Yours</a>
+                <a href="recipes.php" class="btn-modern btn-primary-modern"><?php _e('Explore Recipes'); ?></a>
+                <a href="user/login.php" class="btn-modern btn-outline-modern"><?php _e('Share Yours'); ?></a>
             </div>
         </div>
         <!-- Slider dots -->
@@ -63,17 +63,17 @@
                 <div class="stat-item">
                     <div class="stat-icon">🍽️</div>
                     <div class="stat-number" data-count="<?php echo $totalRecipes;?>"><?php echo $totalRecipes;?></div>
-                    <div class="stat-label">Recipes</div>
+                    <div class="stat-label"><?php _e('Recipes'); ?></div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-icon">👨‍🍳</div>
                     <div class="stat-number" data-count="<?php echo $totalUsers;?>"><?php echo $totalUsers;?></div>
-                    <div class="stat-label">Users</div>
+                    <div class="stat-label"><?php _e('Users'); ?></div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-icon">💬</div>
                     <div class="stat-number" data-count="<?php echo $totalComments;?>"><?php echo $totalComments;?></div>
-                    <div class="stat-label">Comments</div>
+                    <div class="stat-label"><?php _e('Comments'); ?></div>
                 </div>
             </div>
         </div>
@@ -83,9 +83,9 @@
     <section class="featured-recipes-section">
         <div class="container">
             <div class="modern-section-heading">
-                <span class="section-tag">Latest Recipes</span>
-                <h2>Recently Added <span class="highlight">Recipes</span></h2>
-                <p>Fresh dishes from our community of home cooks</p>
+                <span class="section-tag"><?php _e('Latest Recipes'); ?></span>
+                <h2><?php echo __('Recently Added <span class="highlight">Recipes</span>'); ?></h2>
+                <p><?php _e('Fresh dishes from our community of home cooks'); ?></p>
             </div>
 
             <div class="recipes-grid">
@@ -100,7 +100,7 @@ while ($row = mysqli_fetch_array($ret)) {
                     <div class="recipe-card-image">
                         <img src="user/images/<?php echo htmlspecialchars($row['recipePicture']);?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
                         <div class="recipe-card-overlay">
-                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn">View Recipe</a>
+                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn"><?php _e('View Recipe'); ?></a>
                         </div>
                     </div>
                     <div class="recipe-card-body">
@@ -110,7 +110,7 @@ while ($row = mysqli_fetch_array($ret)) {
                             <span><i class="fa fa-clock-o"></i> <?php echo htmlspecialchars($row['recipePrepTime']);?> min</span>
                             <?php } ?>
                             <?php if($row['recipeYields']) { ?>
-                            <span><i class="fa fa-users"></i> <?php echo htmlspecialchars($row['recipeYields']);?> servings</span>
+                            <span><i class="fa fa-users"></i> <?php echo htmlspecialchars($row['recipeYields']);?> <?php _e('servings'); ?></span>
                             <?php } ?>
                             <?php if($row['totalCalories'] > 0) { ?>
                             <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
@@ -118,7 +118,7 @@ while ($row = mysqli_fetch_array($ret)) {
                         </div>
                         <?php if($row['FullName']) { ?>
                         <div class="recipe-author">
-                            <span>by <strong><?php echo htmlspecialchars($row['FullName']);?></strong></span>
+                            <span><?php _e('by'); ?> <strong><?php echo htmlspecialchars($row['FullName']);?></strong></span>
                         </div>
                         <?php } ?>
                     </div>
@@ -127,7 +127,7 @@ while ($row = mysqli_fetch_array($ret)) {
             </div>
 
             <div class="text-center" style="margin-top: 40px;">
-                <a href="recipes.php" class="btn-modern btn-primary-modern">View All Recipes →</a>
+                <a href="recipes.php" class="btn-modern btn-primary-modern"><?php _e('View All Recipes →'); ?></a>
             </div>
         </div>
     </section>
@@ -136,8 +136,8 @@ while ($row = mysqli_fetch_array($ret)) {
     <section class="modern-gallery-section">
         <div class="container">
             <div class="modern-section-heading">
-                <span class="section-tag">Gallery</span>
-                <h2>Food <span class="highlight">Inspiration</span></h2>
+                <span class="section-tag"><?php _e('Gallery'); ?></span>
+                <h2><?php echo __('Food <span class="highlight">Inspiration</span>'); ?></h2>
             </div>
         </div>
         <div class="gallery-grid">
@@ -156,9 +156,9 @@ while ($row = mysqli_fetch_array($ret)) {
         <div class="cta-overlay"></div>
         <div class="container">
             <div class="cta-content">
-                <h2>Ready to share your recipe?</h2>
-                <p>Join our community and share your culinary creations with the world</p>
-                <a href="user/signup.php" class="btn-modern btn-light-modern">Get Started Free</a>
+                <h2><?php _e('Ready to share your recipe?'); ?></h2>
+                <p><?php _e('Join our community and share your culinary creations with the world'); ?></p>
+                <a href="user/signup.php" class="btn-modern btn-light-modern"><?php _e('Get Started Free'); ?></a>
             </div>
         </div>
     </section>

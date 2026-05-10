@@ -1,4 +1,4 @@
-<?php include('includes/dbconnection.php');?>
+<?php include('includes/dbconnection.php'); require_once('includes/lang.php');?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,8 +21,8 @@
         <div class="container">
             <div class="page-header-content">
                 <span class="page-tag">Browse</span>
-                <h1>All Recipes</h1>
-                <p>Discover our complete collection of delicious recipes</p>
+                <h1><?php _e('All Recipes'); ?></h1>
+                <p><?php _e('Discover our complete collection of delicious recipes'); ?></p>
             </div>
         </div>
     </section>
@@ -33,7 +33,7 @@
 
             <!-- Ingredient Search Filter -->
             <div class="ingredient-filter-card" id="ingredientFilter">
-                <h4>🔍 Filter by Ingredients</h4>
+                <h4><?php _e('🔍 Filter by Ingredients'); ?></h4>
                 <div class="multi-select-dropdown">
                     <input type="text" class="multi-select-search" id="ingredientSearchInput" 
                            placeholder="Type to search ingredients..." autocomplete="off">
@@ -73,17 +73,17 @@ while ($row = mysqli_fetch_array($ret)) {
                     <div class="recipe-card-image">
                         <img src="user/images/<?php echo htmlspecialchars($row['recipePicture']);?>" alt="<?php echo htmlspecialchars($row['recipeTitle']);?>" loading="lazy">
                         <div class="recipe-card-overlay">
-                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn">View Recipe</a>
+                            <a href="recipe-details.php?rid=<?php echo intval($row['id']);?>" class="view-recipe-btn"><?php _e('View Recipe'); ?></a>
                         </div>
                     </div>
                     <div class="recipe-card-body">
                         <h5><a href="recipe-details.php?rid=<?php echo intval($row['id']);?>"><?php echo htmlspecialchars($row['recipeTitle']);?></a></h5>
                         <div class="recipe-meta">
                             <?php if($row['recipePrepTime']) { ?>
-                            <span><i class="fa fa-clock-o"></i> <?php echo htmlspecialchars($row['recipePrepTime']);?> min</span>
+                            <span><i class="fa fa-clock-o"></i> <?php echo htmlspecialchars($row['recipePrepTime']);?> <?php _e('min'); ?></span>
                             <?php } ?>
                             <?php if($row['recipeYields']) { ?>
-                            <span><i class="fa fa-users"></i> <?php echo htmlspecialchars($row['recipeYields']);?> servings</span>
+                            <span><i class="fa fa-users"></i> <?php echo htmlspecialchars($row['recipeYields']);?> <?php _e('servings'); ?></span>
                             <?php } ?>
                             <?php if($row['totalCalories'] > 0) { ?>
                             <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
