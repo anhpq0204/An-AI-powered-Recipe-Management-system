@@ -1,6 +1,11 @@
-<?php include('includes/dbconnection.php');
-include('includes/ai-helper.php');
+<?php
 require_once('includes/lang.php');
+include('includes/dbconnection.php');
+require_once('includes/session.php');
+include('includes/ai-helper.php');
+
+$frsToastMsg = '';
+$frsToastType = 'success';
 
 if(isset($_POST['submit'])) {
     $fname = trim($_POST['fname']);
@@ -10,9 +15,11 @@ if(isset($_POST['submit'])) {
     $stmt = $con->prepare("INSERT INTO comments(recipeId, userName, userEmail, commentMessage) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("isss", $recipeid, $fname, $emailid, $message);
     if ($stmt->execute()) {
-        echo "<script>alert('" . addslashes(__('Comment added successfully. After moderation it will show')) . "');</script>";
+        $frsToastMsg = __('Comment added successfully. After moderation it will show');
+        $frsToastType = 'success';
     } else {
-        echo "<script>alert('" . addslashes(__('Something went wrong. Please try again.')) . "');</script>";
+        $frsToastMsg = __('Something went wrong. Please try again.');
+        $frsToastType = 'danger';
     }
     $stmt->close();
 }
@@ -35,26 +42,89 @@ if(isset($_POST['submit'])) {
 
 <?php
 $recipeid = isset($_GET['rid']) ? intval($_GET['rid']) : 0;
-$ret = mysqli_query($con, "SELECT * FROM recipes WHERE id='$recipeid'");
-while ($row = mysqli_fetch_array($ret)) {
-    // Load ingredients từ bảng mới
+$isLoggedIn = !empty($_SESSION['frsuid']);
+$isFav = false;
+$favCount = 0;
+if ($recipeid > 0) {
+    $stmt = $con->prepare("SELECT COUNT(*) AS cnt FROM favorites WHERE recipe_id = ?");
+    $stmt->bind_param("i", $recipeid);
+    $stmt->execute();
+    $favCount = intval($stmt->get_result()->fetch_assoc()['cnt']);
+    $stmt->close();
+    if ($isLoggedIn) {
+        $uid = intval($_SESSION['frsuid']);
+        $stmt = $con->prepare("SELECT id FROM favorites WHERE user_id = ? AND recipe_id = ?");
+        $stmt->bind_param("ii", $uid, $recipeid);
+        $stmt->execute();
+        $isFav = $stmt->get_result()->num_rows > 0;
+        $stmt->close();
+    }
+}
+
+$recipeStmt = $con->prepare("SELECT r.*, u.FullName FROM recipes r LEFT JOIN users u ON u.ID = r.userId WHERE r.id = ?");
+$recipeStmt->bind_param("i", $recipeid);
+$recipeStmt->execute();
+$recipeResult = $recipeStmt->get_result();
+while ($row = $recipeResult->fetch_assoc()) {
     $ingredients = loadRecipeIngredients($con, $recipeid);
 ?>
-    <!-- Page Header with Recipe Image -->
-    <section class="page-header-section page-header-tall" style="background-image: url(user/images/<?php echo htmlspecialchars($row['recipePicture']);?>);">
-        <div class="page-header-overlay"></div>
+    <!-- Recipe Hero Header -->
+    <section class="recipe-hero-section" style="background-image: url(user/images/<?php echo htmlspecialchars($row['recipePicture']);?>);">
+        <div class="recipe-hero-overlay"></div>
         <div class="container">
-            <div class="page-header-content">
+            <div class="recipe-hero-content">
                 <span class="page-tag"><?php _e('Recipe'); ?></span>
                 <h1><?php echo htmlspecialchars($row['recipeTitle']);?></h1>
-                <div class="recipe-detail-meta">
-                    <span>📅 <?php echo htmlspecialchars($row['postingDate']);?></span>
-                    <?php if($row['recipePrepTime']) { ?><span>⏱️ <?php _e('Prep'); ?>: <?php echo htmlspecialchars($row['recipePrepTime']);?> <?php _e('min'); ?></span><?php } ?>
-                    <?php if($row['recipeCookTime']) { ?><span>🍳 <?php _e('Cook'); ?>: <?php echo htmlspecialchars($row['recipeCookTime']);?> <?php _e('min'); ?></span><?php } ?>
-                    <?php if($row['recipeYields']) { ?><span>🍽️ <?php _e('Yields'); ?>: <?php echo htmlspecialchars($row['recipeYields']);?> <?php _e('servings'); ?></span><?php } ?>
-                    <?php if($row['totalCalories'] > 0) { ?>
-                    <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> <?php _e('cal'); ?></span>
-                    <?php } ?>
+
+                <?php if (!empty($row['FullName'])): ?>
+                <p class="recipe-hero-byline">
+                    <?php _e('by'); ?> <strong><?php echo htmlspecialchars($row['FullName']); ?></strong>
+                    &nbsp;·&nbsp;
+                    <?php echo date('d/m/Y', strtotime($row['postingDate'])); ?>
+                </p>
+                <?php else: ?>
+                <p class="recipe-hero-byline"><?php echo date('d/m/Y', strtotime($row['postingDate'])); ?></p>
+                <?php endif; ?>
+
+                <div class="recipe-stats-row">
+                    <?php if ($row['recipePrepTime']): ?>
+                    <div class="recipe-stat">
+                        <i class="fa fa-clock-o"></i>
+                        <span class="stat-label"><?php _e('Prep'); ?></span>
+                        <span class="stat-value"><?php echo intval($row['recipePrepTime']); ?> <?php _e('min'); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($row['recipeCookTime']): ?>
+                    <div class="recipe-stat">
+                        <i class="fa fa-fire"></i>
+                        <span class="stat-label"><?php _e('Cook'); ?></span>
+                        <span class="stat-value"><?php echo intval($row['recipeCookTime']); ?> <?php _e('min'); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($row['recipeYields']): ?>
+                    <div class="recipe-stat">
+                        <i class="fa fa-cutlery"></i>
+                        <span class="stat-label"><?php _e('Yields'); ?></span>
+                        <span class="stat-value"><?php echo htmlspecialchars($row['recipeYields']); ?> <?php _e('servings'); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($row['totalCalories'] > 0): ?>
+                    <div class="recipe-stat recipe-stat-cal">
+                        <i class="fa fa-bolt"></i>
+                        <span class="stat-label"><?php _e('Calories'); ?></span>
+                        <span class="stat-value"><?php echo intval($row['totalCalories']); ?> <?php _e('cal'); ?></span>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="recipe-hero-actions">
+                    <button class="fav-btn-detail<?php echo $isFav ? ' favorited' : ''; ?>"
+                            data-recipe-id="<?php echo $recipeid; ?>"
+                            data-logged-in="<?php echo $isLoggedIn ? '1' : '0'; ?>">
+                        <i class="fa <?php echo $isFav ? 'fa-heart' : 'fa-heart-o'; ?> fav-icon"></i>
+                        <span class="fav-label"><?php echo $isFav ? htmlspecialchars(__('Saved!')) : htmlspecialchars(__('Save to favorites')); ?></span>
+                        <span class="fav-count-badge"><?php echo $favCount; ?></span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -105,7 +175,7 @@ foreach ($ingredients as $ing) {
                             <li>
                                 <label class="ingredient-check">
                                     <input type="checkbox">
-                                    <span><?php echo htmlspecialchars($displayText);?><?php if($gramsNote): ?><small class="text-muted"><?php echo $gramsNote; ?></small><?php endif; ?></span>
+                                    <span><?php echo htmlspecialchars($displayText);?><?php if($gramsNote): ?><small class="ingredient-note"><?php echo $gramsNote; ?></small><?php endif; ?></span>
                                 </label>
                             </li>
 <?php } ?>
@@ -164,6 +234,13 @@ while ($row = mysqli_fetch_array($ret)) {
 
 <?php include_once('includes/footer.php');?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    window._favI18n = {
+        save:   '<?php echo addslashes(__('Save to favorites')); ?>',
+        saved:  '<?php echo addslashes(__('Saved!')); ?>',
+        remove: '<?php echo addslashes(__('Remove from favorites')); ?>'
+    };
+    </script>
     <script src="js/app.js"></script>
 </body>
 </html>

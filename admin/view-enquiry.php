@@ -10,9 +10,11 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
 if (isset($_POST['submit'])) {
     $aremark = $_POST['adminremark'];
     $eid = intval($_GET['enqid']);
-    $query = mysqli_query($con, "UPDATE enquiries SET adminRemark='$aremark' WHERE id='$eid'");
-    echo "<script>alert('" . addslashes(__('Remark saved successfully.')) . "');</script>";
-    echo "<script type='text/javascript'> document.location = 'readenq.php'; </script>";
+    mysqli_query($con, "UPDATE enquiries SET adminRemark='$aremark' WHERE id='$eid'");
+    $_SESSION['frs_toast_msg'] = __('Remark saved successfully.');
+    $_SESSION['frs_toast_type'] = 'success';
+    header('Location: readenq.php');
+    exit;
 }
 ?>
 <!DOCTYPE html>

@@ -145,5 +145,106 @@
             el.style.animationDuration = el.getAttribute('data-duration');
         });
 
+        // ── Pending toast from PHP ─────────────────────
+        if (window._frsToast) {
+            showToast(window._frsToast.msg, window._frsToast.type);
+        }
+
     });
+
+    function showToast(msg, type) {
+        if (typeof bootstrap === 'undefined') return;
+        var container = document.getElementById('frsToastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'frsToastContainer';
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+        }
+        var el = document.createElement('div');
+        el.className = 'toast align-items-center text-bg-' + (type || 'success') + ' border-0';
+        el.setAttribute('role', 'alert');
+        el.innerHTML = '<div class="d-flex"><div class="toast-body">' + msg + '</div>' +
+            '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>';
+        container.appendChild(el);
+        var t = new bootstrap.Toast(el, { delay: 4000 });
+        t.show();
+        el.addEventListener('hidden.bs.toast', function () { el.remove(); });
+    }
+
+    window.showToast = showToast;
+
+    // ── Favorite (heart) toggle ────────────────────────
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.fav-btn, .fav-btn-detail');
+        if (!btn) return;
+
+        if (btn.dataset.loggedIn !== '1') {
+            window.location.href = 'user/login.php';
+            return;
+        }
+
+        var recipeId = btn.dataset.recipeId;
+        if (!recipeId) return;
+
+        btn.disabled = true;
+
+        // Determine API base path (works from root or recipe-details.php)
+        var apiBase = 'api/toggle-favorite.php';
+        if (window.location.pathname.indexOf('/user/') !== -1) {
+            apiBase = '../api/toggle-favorite.php';
+        }
+
+        fetch(apiBase, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'recipe_id=' + encodeURIComponent(recipeId)
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            btn.disabled = false;
+            if (!data.success) return;
+
+            var isFav = data.is_favorited;
+            btn.classList.toggle('favorited', isFav);
+
+            // Update FA icon class
+            var iconEl = btn.querySelector('.fav-icon');
+            if (iconEl) {
+                iconEl.classList.remove('fa-heart', 'fa-heart-o');
+                iconEl.classList.add(isFav ? 'fa-heart' : 'fa-heart-o');
+            }
+
+            // Update label
+            var labelEl = btn.querySelector('.fav-label');
+            if (labelEl) {
+                labelEl.textContent = isFav
+                    ? (window._favI18n ? window._favI18n.saved : 'Saved!')
+                    : (window._favI18n ? window._favI18n.save  : 'Save to favorites');
+            }
+
+            // Update count on card buttons
+            var countEl = btn.querySelector('.fav-count');
+            if (countEl) { countEl.textContent = data.count; }
+
+            // Update count badge on detail page
+            var countBadgeEl = btn.querySelector('.fav-count-badge');
+            if (countBadgeEl) { countBadgeEl.textContent = data.count; }
+
+            btn.title = isFav
+                ? (window._favI18n ? window._favI18n.remove : 'Remove from favorites')
+                : (window._favI18n ? window._favI18n.save   : 'Save to favorites');
+
+            // Pop animation — remove then re-add to retrigger
+            btn.classList.remove('pop');
+            void btn.offsetWidth;
+            btn.classList.add('pop');
+            btn.addEventListener('animationend', function () {
+                btn.classList.remove('pop');
+            }, { once: true });
+        })
+        .catch(function () { btn.disabled = false; });
+    });
+
 })();

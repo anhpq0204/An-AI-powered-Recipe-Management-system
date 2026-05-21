@@ -11,8 +11,8 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 
 $uid = $_SESSION['frsuid'];
 $recipeid = isset($_GET['recipeid']) ? intval($_GET['recipeid']) : 0;
-$msg = "";
-$msgType = "";
+$frsToastMsg = "";
+$frsToastType = "";
 
 // ── XỬ LÝ FORM UPDATE ────────────────────────────────────
 if (isset($_POST['update'])) {
@@ -31,7 +31,8 @@ if (isset($_POST['update'])) {
         $allowed_extensions = array('.jpg', '.jpeg', '.png', '.gif');
 
         if (!in_array($extension, $allowed_extensions)) {
-            echo "<script>alert('" . addslashes(__('Invalid format. Only jpg / jpeg/ png /gif format allowed.')) . "');</script>";
+            $frsToastMsg = __('Invalid format. Only jpg / jpeg/ png /gif format allowed.');
+            $frsToastType = 'danger';
             $foodpic = $_POST["image"];
         } else {
             $foodpic = md5($picdata . time()) . $extension;
@@ -53,8 +54,8 @@ if (isset($_POST['update'])) {
 
             if ($aiResult !== false) {
                 saveIngredientsToDb($con, $recipeid, $aiResult);
-                $msg = sprintf(__('Recipe updated successfully! AI calculated %d calories.'), $aiResult['totalCalories']);
-                $msgType = "success";
+                $frsToastMsg = sprintf(__('Recipe updated successfully! AI calculated %d calories.'), $aiResult['totalCalories']);
+                $frsToastType = "success";
             } else {
                 // AI failed - fallback: xóa mapping cũ, lưu thủ công
                 mysqli_query($con, "DELETE FROM recipe_ingredients WHERE recipe_id = $recipeid");
@@ -73,16 +74,16 @@ if (isset($_POST['update'])) {
                     }
                     mysqli_query($con, "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantityOriginal) VALUES ($recipeid, $ingredientId, '$itemEscaped')");
                 }
-                $msg = __('Recipe updated successfully (AI unavailable - calories not recalculated).');
-                $msgType = "success";
+                $frsToastMsg = __('Recipe updated successfully (AI unavailable - calories not recalculated).');
+                $frsToastType = "success";
             }
         } else {
-            $msg = __('Recipe updated (no ingredients provided).');
-            $msgType = "success";
+            $frsToastMsg = __('Recipe updated (no ingredients provided).');
+            $frsToastType = "success";
         }
     } else {
-        $msg = __('Something went wrong. Please try again.');
-        $msgType = "danger";
+        $frsToastMsg = __('Something went wrong. Please try again.');
+        $frsToastType = "danger";
     }
 }
 
@@ -149,13 +150,6 @@ if ($recipeData) {
                         <?php _e('Recipe Details'); ?>
                     </header>
                     <div class="card-body">
-                        <?php if ($msg): ?>
-                            <div class="alert alert-<?php echo $msgType; ?> alert-dismissible fade show">
-                                <?php echo htmlspecialchars($msg); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php endif; ?>
-
                         <?php if ($recipeData): ?>
                         <form class="form-horizontal" method="post" enctype="multipart/form-data">
 

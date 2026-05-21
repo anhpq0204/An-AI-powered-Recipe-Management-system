@@ -15,7 +15,7 @@ if(isset($_POST['submit']))
      header('location:reset-password.php');
     }
     else{
-      echo "<script>alert('Invalid Details. Please try again.');</script>";
+      echo "<script>window._frsToast=" . json_encode(['msg' => 'Invalid Details. Please try again.', 'type' => 'danger']) . ";</script>";
     }
   }
   ?>

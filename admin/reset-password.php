@@ -10,7 +10,7 @@ if(isset($_POST['submit']))
         $query=mysqli_query($con,"update admins set Password='$password'  where  Email='$email' && MobileNumber='$contactno' ");
    if($query)
    {
-echo "<script>alert('Password successfully changed');</script>";
+echo "<script>window._frsToast=" . json_encode(['msg' => 'Password successfully changed', 'type' => 'success']) . ";</script>";
 session_destroy();
    }
   

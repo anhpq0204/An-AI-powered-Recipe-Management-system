@@ -9,7 +9,8 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 }
 
 $uid = $_SESSION['frsuid'];
-$msg = "";
+$frsToastMsg = "";
+$frsToastType = "success";
 
 // ── XỬ LÝ GET XÓA RECIPE ─────────────────────────────────
 if (isset($_GET['action']) && $_GET['action'] == 'delete') {
@@ -18,9 +19,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
     // Ensure user can only delete their own recipe
     $query = mysqli_query($con, "DELETE FROM recipes WHERE id='$rid' AND userId='$uid'");
     if ($query) {
-        $msg = __('Recipe deleted successfully.');
+        $frsToastMsg = __('Recipe deleted successfully.');
+        $frsToastType = 'success';
     } else {
-        $msg = __('Something went wrong. Please try again.');
+        $frsToastMsg = __('Something went wrong. Please try again.');
+        $frsToastType = 'danger';
     }
 }
 
@@ -56,13 +59,6 @@ $ret = mysqli_query($con, "SELECT * FROM recipes WHERE userId='$uid' ORDER BY id
                         <?php _e('My Recipes'); ?>
                     </header>
                     <div class="card-body">
-                        <?php if ($msg): ?>
-                            <div class="alert <?php echo (strpos($msg, 'successfully') !== false || strpos($msg, 'thành công') !== false) ? 'alert-success' : 'alert-danger'; ?> alert-dismissible fade show">
-                                <?php echo htmlspecialchars($msg); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php endif; ?>
-
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>

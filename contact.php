@@ -1,5 +1,10 @@
-<?php include('includes/dbconnection.php');
+<?php
 require_once('includes/lang.php');
+require_once('includes/session.php');
+include('includes/dbconnection.php');
+
+$frsToastMsg = '';
+$frsToastType = 'success';
 
 if(isset($_POST['submit'])) {
     $fname=$_POST['fname'];
@@ -8,10 +13,13 @@ if(isset($_POST['submit'])) {
     $message=$_POST['message'];
     $query=mysqli_query($con, "insert into enquiries(userName,userEmail,subject,commentMessage) value('$fname','$emailid','$subject','$message' )");
     if ($query) {
-        echo "<script>alert('" . addslashes(__('Enquiry sent successfully. We will contact you shortly')) . "');</script>";
-        echo "<script>window.location.href ='contact.php'</script>";
+        $_SESSION['frs_toast_msg'] = __('Enquiry sent successfully. We will contact you shortly');
+        $_SESSION['frs_toast_type'] = 'success';
+        header('Location: contact.php');
+        exit;
     } else {
-        echo "<script>alert('" . addslashes(__('Something went wrong. Please try again.')) . "');</script>";
+        $frsToastMsg = __('Something went wrong. Please try again.');
+        $frsToastType = 'danger';
     }
 }
 ?>

@@ -12,10 +12,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'approve') {
     $cid = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
     $query = mysqli_query($con, "UPDATE comments SET status='1' WHERE id='$cid'");
     if ($query) {
-        echo "<script>alert('" . addslashes(__('Comment approved successfully.')) . "');</script>";
-        echo "<script type='text/javascript'> document.location = 'approved-comments.php'; </script>";
+        $_SESSION['frs_toast_msg'] = __('Comment approved successfully.');
+        $_SESSION['frs_toast_type'] = 'success';
+        header('Location: approved-comments.php');
+        exit;
     } else {
-        echo "<script>alert('" . addslashes(__('Something went wrong. Please try again.')) . "');</script>";
+        $frsToastMsg = __('Something went wrong. Please try again.');
+        $frsToastType = 'danger';
     }
 }
 // Code for comment reject
@@ -23,10 +26,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'reject') {
     $cid = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
     $query = mysqli_query($con, "UPDATE comments SET status='0' WHERE id='$cid'");
     if ($query) {
-        echo "<script>alert('" . addslashes(__('Comment rejected successfully.')) . "');</script>";
-        echo "<script type='text/javascript'> document.location = 'rejected-comments.php'; </script>";
+        $_SESSION['frs_toast_msg'] = __('Comment rejected successfully.');
+        $_SESSION['frs_toast_type'] = 'success';
+        header('Location: rejected-comments.php');
+        exit;
     } else {
-        echo "<script>alert('" . addslashes(__('Something went wrong. Please try again.')) . "');</script>";
+        $frsToastMsg = __('Something went wrong. Please try again.');
+        $frsToastType = 'danger';
     }
 }
 ?>

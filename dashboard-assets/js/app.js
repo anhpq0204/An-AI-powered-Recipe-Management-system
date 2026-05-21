@@ -157,5 +157,34 @@
             });
         }
 
+        // ── Pending toast from PHP ─────────────────────
+        if (window._frsToast) {
+            showToast(window._frsToast.msg, window._frsToast.type);
+        }
+
     });
+
+    function showToast(msg, type) {
+        if (typeof bootstrap === 'undefined') return;
+        var container = document.getElementById('frsToastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'frsToastContainer';
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+        }
+        var el = document.createElement('div');
+        el.className = 'toast align-items-center text-bg-' + (type || 'success') + ' border-0';
+        el.setAttribute('role', 'alert');
+        el.innerHTML = '<div class="d-flex"><div class="toast-body">' + msg + '</div>' +
+            '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>';
+        container.appendChild(el);
+        var t = new bootstrap.Toast(el, { delay: 4000 });
+        t.show();
+        el.addEventListener('hidden.bs.toast', function () { el.remove(); });
+    }
+
+    window.showToast = showToast;
+
 })();

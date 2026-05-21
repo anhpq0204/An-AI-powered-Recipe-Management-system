@@ -54,6 +54,13 @@
                         <span><?php _e('My Plans'); ?></span>
                     </a>
                 </li>
+
+                <li>
+                    <a class="<?php if($userCurrentPage == 'my-favorites.php') echo 'active';?>" href="my-favorites.php">
+                        <i class="fa fa-heart"></i>
+                        <span><?php _e('My Favorites'); ?></span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

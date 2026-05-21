@@ -10,8 +10,8 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 }
 
 $userid = $_SESSION['frsuid'];
-$msg = "";
-$msgType = ""; // success or danger
+$frsToastMsg = "";
+$frsToastType = ""; // success or danger
 
 // ── XỬ LÝ FORM THÊM RECIPE ───────────────────────────────
 if (isset($_POST['submit'])) {
@@ -28,8 +28,8 @@ if (isset($_POST['submit'])) {
         $allowed_extensions = array('.jpg', '.jpeg', '.png', '.gif');
 
         if (!in_array($extension, $allowed_extensions)) {
-            $msg = __('Invalid format. Only jpg / jpeg/ png /gif format allowed.');
-            $msgType = "danger";
+            $frsToastMsg = __('Invalid format. Only jpg / jpeg/ png /gif format allowed.');
+            $frsToastType = "danger";
         } else {
             $foodpic = md5($pic . time()) . $extension;
             move_uploaded_file($_FILES["images"]["tmp_name"], "images/" . $foodpic);
@@ -40,8 +40,8 @@ if (isset($_POST['submit'])) {
             $fitem = array_values($fitem);
 
             if (empty($fitem)) {
-                $msg = __('Please add at least one ingredient.');
-                $msgType = "danger";
+                $frsToastMsg = __('Please add at least one ingredient.');
+                $frsToastType = "danger";
             } else {
                 // 1. Insert recipe trước (không có ingredients column nữa)
                 $query = mysqli_query($con, "INSERT INTO recipes(userId, recipeTitle, recipePrepTime, recipeCookTime, recipeYields, recipeDescription, recipePicture) VALUES ('$userid', '$recipetitle', '$recipeprep', '$recipecooktime', '$yields', '$description', '$foodpic')");
@@ -55,8 +55,8 @@ if (isset($_POST['submit'])) {
                     if ($aiResult !== false) {
                         // 3. Lưu ingredients vào DB
                         saveIngredientsToDb($con, $recipeId, $aiResult);
-                        $msg = sprintf(__('Recipe added successfully! AI calculated %d calories.'), $aiResult['totalCalories']);
-                        $msgType = "success";
+                        $frsToastMsg = sprintf(__('Recipe added successfully! AI calculated %d calories.'), $aiResult['totalCalories']);
+                        $frsToastType = "success";
                     } else {
                         // AI failed - lưu ingredients thủ công (fallback không có calo)
                         foreach ($fitem as $item) {
@@ -77,18 +77,18 @@ if (isset($_POST['submit'])) {
                             mysqli_query($con, "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantityOriginal) VALUES ($recipeId, $ingredientId, '$itemEscaped')");
                         }
 
-                        $msg = __('Recipe added successfully (AI unavailable - calories not calculated).');
-                        $msgType = "success";
+                        $frsToastMsg = __('Recipe added successfully (AI unavailable - calories not calculated).');
+                        $frsToastType = "success";
                     }
                 } else {
-                    $msg = __('Something went wrong. Please try again.');
-                    $msgType = "danger";
+                    $frsToastMsg = __('Something went wrong. Please try again.');
+                    $frsToastType = "danger";
                 }
             }
         }
     } else {
-        $msg = __('Please upload a recipe picture.');
-        $msgType = "danger";
+        $frsToastMsg = __('Please upload a recipe picture.');
+        $frsToastType = "danger";
     }
 }
 ?>
@@ -146,13 +146,6 @@ if (isset($_POST['submit'])) {
                         <?php _e('Recipe Details'); ?>
                     </header>
                     <div class="card-body">
-                        <?php if ($msg): ?>
-                            <div class="alert alert-<?php echo $msgType; ?> alert-dismissible fade show popup-alert">
-                                <?php echo htmlspecialchars($msg); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php endif; ?>
-
                         <form class="form-horizontal" method="post" enctype="multipart/form-data">
 
                             <div class="form-group row mb-3">

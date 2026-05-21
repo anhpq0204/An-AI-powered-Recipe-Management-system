@@ -418,4 +418,17 @@
 
     // ── Admin: Registered Users ──────────────────────────────
     'Registered User Details' => 'Danh sách người dùng đã đăng ký',
+
+    // ── Favorites ─────────────────────────────────────────────
+    'My Favorites'              => 'Yêu thích của tôi',
+    'Your favorite recipes'     => 'Công thức yêu thích của bạn',
+    'No favorites yet'          => 'Chưa có công thức yêu thích',
+    'Browse recipes and click the heart to save your favorites.'
+                                => 'Khám phá công thức và nhấn tim để lưu yêu thích.',
+    'Go to Recipes'             => 'Xem công thức',
+    'Save to favorites'         => 'Lưu yêu thích',
+    'Remove from favorites'     => 'Bỏ yêu thích',
+    'Saved!'                    => 'Đã lưu!',
+    'Saved'                     => 'Đã lưu',
+    'Remove'                    => 'Xóa',
 ];

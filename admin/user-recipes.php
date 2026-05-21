@@ -1,18 +1,23 @@
-<?php   require_once('../includes/session.php');
+<?php
+require_once('../includes/lang.php');
+require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
   header('location:logout.php');
+  exit;
   } else{
- // Code for deletion   
+ // Code for deletion
 if(isset($_GET['action']) && $_GET['action']=='delete'){
 $rid=isset($_GET['bsid']) ? intval($_GET['bsid']) : 0;
 $query=mysqli_query($con,"delete from recipes where id='$rid'");
 if($query){
-unlink($ppicpath);
-echo "<script>alert('Recipe deleted successfully.');</script>";
-echo "<script type='text/javascript'> document.location = 'manage-recipes.php'; </script>";
+    $_SESSION['frs_toast_msg'] = __('Recipe deleted successfully.');
+    $_SESSION['frs_toast_type'] = 'success';
+    header('Location: manage-recipes.php');
+    exit;
 } else {
-echo "<script>alert('Something went wrong. Please try again.');</script>";
+    $frsToastMsg = __('Something went wrong. Please try again.');
+    $frsToastType = 'danger';
 }
 
 }

@@ -1,4 +1,21 @@
-<?php include('includes/dbconnection.php'); require_once('includes/lang.php');?>
+<?php
+require_once('includes/lang.php');
+include('includes/dbconnection.php');
+require_once('includes/session.php');
+
+// Load favorite recipe IDs for logged-in user
+$userFavIds = [];
+if (!empty($_SESSION['frsuid'])) {
+    $uid = intval($_SESSION['frsuid']);
+    $favStmt = $con->prepare("SELECT recipe_id FROM favorites WHERE user_id = ?");
+    $favStmt->bind_param("i", $uid);
+    $favStmt->execute();
+    $favRows = $favStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $favStmt->close();
+    foreach ($favRows as $fr) { $userFavIds[$fr['recipe_id']] = true; }
+}
+$isLoggedIn = !empty($_SESSION['frsuid']);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,11 +80,14 @@
             <div id="defaultRecipesList">
             <div class="recipes-grid">
 <?php
-$ret = mysqli_query($con, "SELECT r.recipeTitle, r.recipePicture, r.id, r.postingDate, r.recipePrepTime, r.recipeYields, r.totalCalories, u.FullName 
-    FROM recipes r 
-    LEFT JOIN users u ON r.userId = u.ID 
+$ret = mysqli_query($con, "SELECT r.recipeTitle, r.recipePicture, r.id, r.postingDate, r.recipePrepTime, r.recipeYields, r.totalCalories, u.FullName,
+    (SELECT COUNT(*) FROM favorites WHERE recipe_id = r.id) AS fav_count
+    FROM recipes r
+    LEFT JOIN users u ON r.userId = u.ID
     ORDER BY r.id DESC");
 while ($row = mysqli_fetch_array($ret)) {
+    $isFav = isset($userFavIds[intval($row['id'])]);
+    $favCount = intval($row['fav_count']);
 ?>
                 <div class="recipe-card">
                     <div class="recipe-card-image">
@@ -92,6 +112,13 @@ while ($row = mysqli_fetch_array($ret)) {
                         <?php if($row['FullName']) { ?>
                         <div class="recipe-author">by <strong><?php echo htmlspecialchars($row['FullName']);?></strong></div>
                         <?php } ?>
+                        <button class="fav-btn<?php echo $isFav ? ' favorited' : ''; ?>"
+                                data-recipe-id="<?php echo intval($row['id']); ?>"
+                                data-logged-in="<?php echo $isLoggedIn ? '1' : '0'; ?>"
+                                title="<?php echo $isFav ? htmlspecialchars(__('Remove from favorites')) : htmlspecialchars(__('Save to favorites')); ?>">
+                            <span class="fav-count"><?php echo $favCount; ?></span>
+                            <i class="fa <?php echo $isFav ? 'fa-heart' : 'fa-heart-o'; ?> fav-icon"></i>
+                        </button>
                     </div>
                 </div>
 <?php } ?>
@@ -103,6 +130,13 @@ while ($row = mysqli_fetch_array($ret)) {
 
 <?php include_once('includes/footer.php');?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    window._favI18n = {
+        save:   '<?php echo addslashes(__('Save to favorites')); ?>',
+        saved:  '<?php echo addslashes(__('Saved!')); ?>',
+        remove: '<?php echo addslashes(__('Remove from favorites')); ?>'
+    };
+    </script>
     <script src="js/app.js"></script>
     <script>
     function escHtml(str) {

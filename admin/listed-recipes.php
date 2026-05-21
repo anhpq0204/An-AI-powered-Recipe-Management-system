@@ -12,10 +12,13 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
     $rid = isset($_GET['bsid']) ? intval($_GET['bsid']) : 0;
     $query = mysqli_query($con, "DELETE FROM recipes WHERE id='$rid'");
     if ($query) {
-        echo "<script>alert('" . addslashes(__('Recipe deleted successfully.')) . "');</script>";
-        echo "<script type='text/javascript'> document.location = 'listed-recipes.php'; </script>";
+        $_SESSION['frs_toast_msg'] = __('Recipe deleted successfully.');
+        $_SESSION['frs_toast_type'] = 'success';
+        header('Location: listed-recipes.php');
+        exit;
     } else {
-        echo "<script>alert('" . addslashes(__('Something went wrong. Please try again.')) . "');</script>";
+        $frsToastMsg = __('Something went wrong. Please try again.');
+        $frsToastType = 'danger';
     }
 }
 ?>
