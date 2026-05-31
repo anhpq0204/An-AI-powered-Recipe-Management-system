@@ -61,6 +61,23 @@
                         <span><?php _e('My Favorites'); ?></span>
                     </a>
                 </li>
+
+                <li>
+                    <a class="<?php if($userCurrentPage == 'notifications.php') echo 'active';?>" href="notifications.php">
+                        <i class="fa fa-bell"></i>
+                        <span><?php _e('Notifications'); ?></span>
+                        <?php
+                        $uid_sb = intval($_SESSION['frsuid']);
+                        $nb = $con->prepare("SELECT COUNT(*) AS c FROM notifications WHERE user_id = ? AND is_read = 0");
+                        $nb->bind_param("i", $uid_sb);
+                        $nb->execute();
+                        $unread = intval($nb->get_result()->fetch_assoc()['c']);
+                        $nb->close();
+                        if($unread > 0): ?>
+                        <span class="badge bg-danger ms-1"><?php echo $unread; ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

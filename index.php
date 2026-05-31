@@ -73,9 +73,10 @@ $isLoggedIn = !empty($_SESSION['frsuid']);
         <div class="container">
             <div class="stats-row">
                 <?php
-                $totalRecipes = mysqli_num_rows(mysqli_query($con, "SELECT id FROM recipes"));
-                $totalUsers = mysqli_num_rows(mysqli_query($con, "SELECT id FROM users"));
-                $totalComments = mysqli_num_rows(mysqli_query($con, "SELECT id FROM comments"));
+                $statsRow = $con->query("SELECT (SELECT COUNT(*) FROM recipes) AS r, (SELECT COUNT(*) FROM users) AS u, (SELECT COUNT(*) FROM comments) AS c")->fetch_assoc();
+                $totalRecipes  = $statsRow['r'];
+                $totalUsers    = $statsRow['u'];
+                $totalComments = $statsRow['c'];
                 ?>
                 <div class="stat-item">
                     <div class="stat-icon">🍽️</div>

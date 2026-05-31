@@ -1,0 +1,14 @@
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<h1>404 Not Found</h1>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: deb/k6_latest_amd64.deb</li>
+<li>RequestId: AN83SAAN35E71NQ6</li>
+<li>HostId: EGmSAONMHUAg0IXqOYz3Vx+V7weajwB379nLLryVmaguD69C6fYGc/FGFyAyEIZZwl/8wPoIIgle8jsqBhVB0sCP00KiFXj0</li>
+</ul>
+<hr/>
+</body>
+</html>

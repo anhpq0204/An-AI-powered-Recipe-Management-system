@@ -78,16 +78,33 @@ $isLoggedIn = !empty($_SESSION['frsuid']);
 
             <!-- Default recipes listing -->
             <div id="defaultRecipesList">
-            <div class="recipes-grid">
 <?php
-$ret = mysqli_query($con, "SELECT r.recipeTitle, r.recipePicture, r.id, r.postingDate, r.recipePrepTime, r.recipeYields, r.totalCalories, u.FullName,
-    (SELECT COUNT(*) FROM favorites WHERE recipe_id = r.id) AS fav_count
+$perPage = 9;
+$page    = max(1, intval($_GET['page'] ?? 1));
+$offset  = ($page - 1) * $perPage;
+
+$totalStmt = $con->prepare("SELECT COUNT(*) AS cnt FROM recipes r WHERE r.status = 1");
+$totalStmt->execute();
+$totalRows = intval($totalStmt->get_result()->fetch_assoc()['cnt']);
+$totalStmt->close();
+$totalPages = (int) ceil($totalRows / $perPage);
+
+$ret = mysqli_query($con, "SELECT r.recipeTitle, r.recipePicture, r.id, r.postingDate, r.recipePrepTime, r.recipeYields, r.totalCalories, r.status, u.FullName,
+    (SELECT COUNT(*) FROM favorites WHERE recipe_id = r.id) AS fav_count,
+    (SELECT ROUND(AVG(rating),1) FROM ratings WHERE recipe_id = r.id) AS avg_rating,
+    (SELECT COUNT(*) FROM ratings WHERE recipe_id = r.id) AS rating_count
     FROM recipes r
     LEFT JOIN users u ON r.userId = u.ID
-    ORDER BY r.id DESC");
-while ($row = mysqli_fetch_array($ret)) {
+    WHERE r.status = 1
+    ORDER BY r.id DESC
+    LIMIT $perPage OFFSET $offset");
+?>
+            <div class="recipes-grid">
+<?php while ($row = mysqli_fetch_array($ret)) {
     $isFav = isset($userFavIds[intval($row['id'])]);
     $favCount = intval($row['fav_count']);
+    $avgRating = $row['avg_rating'] ? floatval($row['avg_rating']) : 0;
+    $ratingCount = intval($row['rating_count']);
 ?>
                 <div class="recipe-card">
                     <div class="recipe-card-image">
@@ -109,8 +126,17 @@ while ($row = mysqli_fetch_array($ret)) {
                             <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
                             <?php } ?>
                         </div>
+                        <?php if($avgRating > 0): ?>
+                        <div class="recipe-stars-row">
+                            <?php for($s=1;$s<=5;$s++): ?>
+                            <i class="fa <?php echo $s <= round($avgRating) ? 'fa-star' : 'fa-star-o'; ?> star-icon"></i>
+                            <?php endfor; ?>
+                            <span class="star-score"><?php echo number_format($avgRating,1); ?></span>
+                            <span class="star-count">(<?php echo $ratingCount; ?>)</span>
+                        </div>
+                        <?php endif; ?>
                         <?php if($row['FullName']) { ?>
-                        <div class="recipe-author">by <strong><?php echo htmlspecialchars($row['FullName']);?></strong></div>
+                        <div class="recipe-author"><?php _e('by'); ?> <strong><?php echo htmlspecialchars($row['FullName']);?></strong></div>
                         <?php } ?>
                         <button class="fav-btn<?php echo $isFav ? ' favorited' : ''; ?>"
                                 data-recipe-id="<?php echo intval($row['id']); ?>"
@@ -123,6 +149,21 @@ while ($row = mysqli_fetch_array($ret)) {
                 </div>
 <?php } ?>
             </div>
+
+            <?php if($totalPages > 1): ?>
+            <nav class="pagination-nav">
+                <?php if($page > 1): ?>
+                <a href="?page=<?php echo $page-1; ?>" class="page-btn">&laquo;</a>
+                <?php endif; ?>
+                <?php for($p = max(1,$page-2); $p <= min($totalPages,$page+2); $p++): ?>
+                <a href="?page=<?php echo $p; ?>" class="page-btn<?php echo $p==$page?' active':''; ?>"><?php echo $p; ?></a>
+                <?php endfor; ?>
+                <?php if($page < $totalPages): ?>
+                <a href="?page=<?php echo $page+1; ?>" class="page-btn">&raquo;</a>
+                <?php endif; ?>
+            </nav>
+            <?php endif; ?>
+
             </div>
 
         </div>

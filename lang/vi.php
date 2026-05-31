@@ -431,4 +431,35 @@
     'Saved!'                    => 'Đã lưu!',
     'Saved'                     => 'Đã lưu',
     'Remove'                    => 'Xóa',
+
+    // ── Rating ────────────────────────────────────────────────
+    'ratings'                   => 'đánh giá',
+    'No ratings yet'            => 'Chưa có đánh giá',
+    'Rating saved!'             => 'Đã lưu đánh giá!',
+
+    // ── Similar Recipes ───────────────────────────────────────
+    'Similar Recipes'           => 'Công thức tương tự',
+    'shared ingredients'        => 'nguyên liệu chung',
+
+    // ── Notifications ─────────────────────────────────────────
+    'Notifications'             => 'Thông báo',
+    'No notifications yet'      => 'Chưa có thông báo',
+    'Your recipe "%s" has been approved and is now public!'
+                                => 'Công thức "%s" của bạn đã được duyệt và hiển thị công khai!',
+    'Your recipe "%s" needs revision before publishing.'
+                                => 'Công thức "%s" của bạn cần chỉnh sửa trước khi đăng.',
+
+    // ── Admin: Recipe Approval ────────────────────────────────
+    'Approve'                   => 'Duyệt',
+    'Reject'                    => 'Từ chối',
+    'Reject this recipe?'       => 'Từ chối công thức này?',
+    'Pending'                   => 'Chờ duyệt',
+    'Published'                 => 'Đã đăng',
+    'Rejected'                  => 'Đã từ chối',
+    'Recipe approved successfully.' => 'Đã duyệt công thức thành công.',
+    'Recipe rejected.'          => 'Đã từ chối công thức.',
+
+    // ── Pagination ────────────────────────────────────────────
+    'recipes found'             => 'công thức được tìm thấy',
+    'recipe found'              => 'công thức được tìm thấy',
 ];

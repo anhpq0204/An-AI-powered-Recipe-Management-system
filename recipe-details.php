@@ -45,18 +45,37 @@ $recipeid = isset($_GET['rid']) ? intval($_GET['rid']) : 0;
 $isLoggedIn = !empty($_SESSION['frsuid']);
 $isFav = false;
 $favCount = 0;
+$avgRating = 0;
+$ratingCount = 0;
+$userRating = 0;
 if ($recipeid > 0) {
     $stmt = $con->prepare("SELECT COUNT(*) AS cnt FROM favorites WHERE recipe_id = ?");
     $stmt->bind_param("i", $recipeid);
     $stmt->execute();
     $favCount = intval($stmt->get_result()->fetch_assoc()['cnt']);
     $stmt->close();
+
+    $stmt = $con->prepare("SELECT ROUND(AVG(rating),1) AS avg_r, COUNT(*) AS cnt FROM ratings WHERE recipe_id = ?");
+    $stmt->bind_param("i", $recipeid);
+    $stmt->execute();
+    $rRow = $stmt->get_result()->fetch_assoc();
+    $avgRating   = floatval($rRow['avg_r']);
+    $ratingCount = intval($rRow['cnt']);
+    $stmt->close();
+
     if ($isLoggedIn) {
         $uid = intval($_SESSION['frsuid']);
         $stmt = $con->prepare("SELECT id FROM favorites WHERE user_id = ? AND recipe_id = ?");
         $stmt->bind_param("ii", $uid, $recipeid);
         $stmt->execute();
         $isFav = $stmt->get_result()->num_rows > 0;
+        $stmt->close();
+
+        $stmt = $con->prepare("SELECT rating FROM ratings WHERE user_id = ? AND recipe_id = ?");
+        $stmt->bind_param("ii", $uid, $recipeid);
+        $stmt->execute();
+        $ur = $stmt->get_result()->fetch_assoc();
+        $userRating = $ur ? intval($ur['rating']) : 0;
         $stmt->close();
     }
 }
@@ -125,6 +144,22 @@ while ($row = $recipeResult->fetch_assoc()) {
                         <span class="fav-label"><?php echo $isFav ? htmlspecialchars(__('Saved!')) : htmlspecialchars(__('Save to favorites')); ?></span>
                         <span class="fav-count-badge"><?php echo $favCount; ?></span>
                     </button>
+
+                    <!-- Star Rating -->
+                    <div class="hero-rating-box" data-recipe-id="<?php echo $recipeid; ?>"
+                         data-logged-in="<?php echo $isLoggedIn ? '1' : '0'; ?>">
+                        <?php for($s = 1; $s <= 5; $s++): ?>
+                        <i class="fa fa-star hero-star<?php echo $s <= $userRating ? ' active' : ''; ?>"
+                           data-value="<?php echo $s; ?>"></i>
+                        <?php endfor; ?>
+                        <span class="hero-rating-avg">
+                            <?php if($avgRating > 0): ?>
+                            <?php echo number_format($avgRating, 1); ?> <small>(<?php echo $ratingCount; ?> <?php _e('ratings'); ?>)</small>
+                            <?php else: ?>
+                            <small><?php _e('No ratings yet'); ?></small>
+                            <?php endif; ?>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -182,6 +217,49 @@ foreach ($ingredients as $ing) {
                         </ul>
                     </div>
                 </div>
+
+                <!-- Similar Recipes -->
+<?php
+$simStmt = $con->prepare(
+    "SELECT r.id, r.recipeTitle, r.recipePicture, r.totalCalories,
+            COUNT(ri2.ingredient_id) AS shared
+     FROM recipe_ingredients ri2
+     JOIN recipes r ON r.id = ri2.recipe_id
+     WHERE ri2.ingredient_id IN (
+         SELECT ingredient_id FROM recipe_ingredients WHERE recipe_id = ?
+     )
+     AND ri2.recipe_id != ?
+     AND r.status = 1
+     GROUP BY r.id
+     ORDER BY shared DESC
+     LIMIT 4"
+);
+$simStmt->bind_param("ii", $recipeid, $recipeid);
+$simStmt->execute();
+$simResult = $simStmt->get_result();
+if ($simResult->num_rows > 0):
+?>
+                <div class="col-12 col-lg-4">
+                    <div class="recipe-detail-card similar-card">
+                        <h3><?php _e('Similar Recipes'); ?></h3>
+                        <div class="similar-list">
+                        <?php while($sim = $simResult->fetch_assoc()): ?>
+                            <a href="recipe-details.php?rid=<?php echo intval($sim['id']); ?>" class="similar-item">
+                                <img src="user/images/<?php echo htmlspecialchars($sim['recipePicture']); ?>"
+                                     alt="<?php echo htmlspecialchars($sim['recipeTitle']); ?>">
+                                <div class="similar-info">
+                                    <span class="similar-title"><?php echo htmlspecialchars($sim['recipeTitle']); ?></span>
+                                    <?php if($sim['totalCalories'] > 0): ?>
+                                    <span class="similar-cal">🔥 <?php echo intval($sim['totalCalories']); ?> cal</span>
+                                    <?php endif; ?>
+                                    <span class="similar-shared"><?php echo intval($sim['shared']); ?> <?php _e('shared ingredients'); ?></span>
+                                </div>
+                            </a>
+                        <?php endwhile; ?>
+                        </div>
+                    </div>
+                </div>
+<?php endif; $simStmt->close(); ?>
             </div>
 <?php } ?>
 
@@ -242,5 +320,46 @@ while ($row = mysqli_fetch_array($ret)) {
     };
     </script>
     <script src="js/app.js"></script>
+    <script>
+    (function() {
+        var ratingBox = document.querySelector('.hero-rating-box');
+        if (!ratingBox) return;
+        var stars = ratingBox.querySelectorAll('.hero-star');
+        var recipeId = ratingBox.dataset.recipeId;
+        var loggedIn = ratingBox.dataset.loggedIn === '1';
+        var avgEl = ratingBox.querySelector('.hero-rating-avg');
+
+        stars.forEach(function(star) {
+            star.addEventListener('mouseover', function() {
+                var val = parseInt(this.dataset.value);
+                stars.forEach(function(s) {
+                    s.classList.toggle('hover', parseInt(s.dataset.value) <= val);
+                });
+            });
+            star.addEventListener('mouseleave', function() {
+                stars.forEach(function(s) { s.classList.remove('hover'); });
+            });
+            star.addEventListener('click', function() {
+                if (!loggedIn) { window.location.href = 'user/login.php'; return; }
+                var val = parseInt(this.dataset.value);
+                fetch('api/rate-recipe.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'recipe_id=' + recipeId + '&rating=' + val
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (!data.success) return;
+                    stars.forEach(function(s) {
+                        s.classList.toggle('active', parseInt(s.dataset.value) <= data.user_rating);
+                    });
+                    avgEl.innerHTML = data.avg_rating.toFixed(1) +
+                        ' <small>(' + data.count + ' <?php echo addslashes(__('ratings')); ?>)</small>';
+                    if (window.showToast) showToast('<?php echo addslashes(__('Rating saved!')); ?>', 'success');
+                });
+            });
+        });
+    })();
+    </script>
 </body>
 </html>
