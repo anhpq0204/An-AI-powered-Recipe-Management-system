@@ -1,5 +1,6 @@
 <?php
 require_once('includes/lang.php');
+require_once('includes/helpers.php');
 include('includes/dbconnection.php');
 require_once('includes/session.php');
 
@@ -126,15 +127,7 @@ $ret = mysqli_query($con, "SELECT r.recipeTitle, r.recipePicture, r.id, r.postin
                             <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
                             <?php } ?>
                         </div>
-                        <?php if($avgRating > 0): ?>
-                        <div class="recipe-stars-row">
-                            <?php for($s=1;$s<=5;$s++): ?>
-                            <i class="fa <?php echo $s <= round($avgRating) ? 'fa-star' : 'fa-star-o'; ?> star-icon"></i>
-                            <?php endfor; ?>
-                            <span class="star-score"><?php echo number_format($avgRating,1); ?></span>
-                            <span class="star-count">(<?php echo $ratingCount; ?>)</span>
-                        </div>
-                        <?php endif; ?>
+                        <?php render_stars($avgRating, $ratingCount); ?>
                         <?php if($row['FullName']) { ?>
                         <div class="recipe-author"><?php _e('by'); ?> <strong><?php echo htmlspecialchars($row['FullName']);?></strong></div>
                         <?php } ?>

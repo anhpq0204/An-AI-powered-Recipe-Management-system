@@ -1,5 +1,6 @@
 <?php
 require_once('includes/lang.php');
+require_once('includes/helpers.php');
 include('includes/dbconnection.php');
 require_once('includes/session.php');
 
@@ -109,13 +110,18 @@ $isLoggedIn = !empty($_SESSION['frsuid']);
             <div class="recipes-grid">
 <?php
 $ret = mysqli_query($con, "SELECT r.recipeTitle, r.recipePicture, r.id, r.recipePrepTime, r.recipeCookTime, r.recipeYields, r.totalCalories, u.FullName,
-    (SELECT COUNT(*) FROM favorites WHERE recipe_id = r.id) AS fav_count
+    (SELECT COUNT(*) FROM favorites WHERE recipe_id = r.id) AS fav_count,
+    (SELECT ROUND(AVG(rating),1) FROM ratings WHERE recipe_id = r.id) AS avg_rating,
+    (SELECT COUNT(*) FROM ratings WHERE recipe_id = r.id) AS rating_count
     FROM recipes r
     LEFT JOIN users u ON r.userId = u.ID
+    WHERE r.status = 1
     ORDER BY r.id DESC LIMIT 6");
 while ($row = mysqli_fetch_array($ret)) {
     $isFav = isset($userFavIds[intval($row['id'])]);
     $favCount = intval($row['fav_count']);
+    $avgRating = $row['avg_rating'] ? floatval($row['avg_rating']) : 0;
+    $ratingCount = intval($row['rating_count']);
 ?>
                 <div class="recipe-card">
                     <div class="recipe-card-image">
@@ -137,6 +143,7 @@ while ($row = mysqli_fetch_array($ret)) {
                             <span class="calorie-badge">🔥 <?php echo intval($row['totalCalories']);?> cal</span>
                             <?php } ?>
                         </div>
+                        <?php render_stars($avgRating, $ratingCount); ?>
                         <?php if($row['FullName']) { ?>
                         <div class="recipe-author">
                             <span><?php _e('by'); ?> <strong><?php echo htmlspecialchars($row['FullName']);?></strong></span>
