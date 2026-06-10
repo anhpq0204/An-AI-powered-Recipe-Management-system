@@ -56,11 +56,15 @@ if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
                         </thead>
                         <tbody>
                         <?php
-                        $ret = mysqli_query($con, "SELECT * FROM recipes WHERE recipeTitle LIKE '%$sdata%'");
-                        $count = mysqli_num_rows($ret);
+                        $like = '%' . $sdata . '%';
+                        $stmt = $con->prepare("SELECT * FROM recipes WHERE recipeTitle LIKE ?");
+                        $stmt->bind_param("s", $like);
+                        $stmt->execute();
+                        $ret = $stmt->get_result();
+                        $count = $ret->num_rows;
                         $cnt = 1;
                         if ($count > 0) {
-                            while ($row = mysqli_fetch_array($ret)) {
+                            while ($row = $ret->fetch_assoc()) {
                         ?>
                             <tr>
                                 <td><?php echo $cnt; ?></td>

@@ -3,6 +3,7 @@ require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
 include('../includes/ai-helper.php');
+require_once('../includes/image-helper.php');
 
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
     header('location:logout.php');
@@ -32,7 +33,10 @@ if (isset($_POST['submit'])) {
             $frsToastType = "danger";
         } else {
             $foodpic = md5($pic . time()) . $extension;
-            move_uploaded_file($_FILES["images"]["tmp_name"], "images/" . $foodpic);
+            $tmpUpload = $_FILES["images"]["tmp_name"];
+            if (is_uploaded_file($tmpUpload)) {
+                frs_save_optimized_image($tmpUpload, "images/" . $foodpic);
+            }
 
             // Xử lý mảng Ingredients qua AI
             $fitem = isset($_POST["fitem"]) ? $_POST["fitem"] : [];

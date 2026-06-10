@@ -1,20 +1,22 @@
 <?php
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
+require_once('../includes/auth.php');
 
 if(isset($_POST['submit']))
   {
     $contactno=$_SESSION['contactno'];
     $email=$_SESSION['email'];
-    $password=md5($_POST['newpassword']);
+    $password=frs_password_hash($_POST['newpassword']);
 
-        $query=mysqli_query($con,"update users set Password='$password'  where  Email='$email' && MobileNumber='$contactno' ");
-   if($query)
+    $query = $con->prepare("UPDATE users SET Password = ? WHERE Email = ? AND MobileNumber = ?");
+    $query->bind_param("sss", $password, $email, $contactno);
+    if($query->execute())
    {
 echo "<script>window._frsToast=" . json_encode(['msg' => 'Password successfully changed', 'type' => 'success']) . ";</script>";
 session_destroy();
    }
-  
+   $query->close();
   }
   ?>
 

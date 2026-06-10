@@ -2,24 +2,30 @@
 require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
+require_once('../includes/auth.php');
 
 if (!isset($_SESSION['frsaid']) || strlen($_SESSION['frsaid']) == 0) {
     header('location:logout.php');
     exit;
 }
 
-$adminid = $_SESSION['frsaid'];
+$adminid = intval($_SESSION['frsaid']);
 $msg = "";
 $msgType = "";
 
 if (isset($_POST['submit'])) {
-    $cpassword = md5($_POST['currentpassword']);
-    $newpassword = md5($_POST['newpassword']);
+    $stmt = $con->prepare("SELECT Password FROM admins WHERE ID = ?");
+    $stmt->bind_param("i", $adminid);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    $query = mysqli_query($con, "SELECT ID FROM admins WHERE ID='$adminid' AND Password='$cpassword'");
-    $row = mysqli_fetch_array($query);
-    if ($row > 0) {
-        $ret = mysqli_query($con, "UPDATE admins SET Password='$newpassword' WHERE ID='$adminid'");
+    if ($row && frs_password_verify($_POST['currentpassword'], $row['Password'])) {
+        $newpassword = frs_password_hash($_POST['newpassword']);
+        $up = $con->prepare("UPDATE admins SET Password = ? WHERE ID = ?");
+        $up->bind_param("si", $newpassword, $adminid);
+        $up->execute();
+        $up->close();
         $msg = __('Password successfully changed.');
         $msgType = "success";
     } else {

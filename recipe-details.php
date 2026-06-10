@@ -354,7 +354,6 @@ while ($row = mysqli_fetch_array($ret)) {
                     stars.forEach(function(s) {
                         s.classList.toggle('active', parseInt(s.dataset.value) <= data.user_rating);
                     });
-                    var rounded = Math.round(data.avg_rating * 2) / 2;
                     avgEl.innerHTML = data.avg_rating.toFixed(1) +
                         ' <small>(' + data.count + ' <?php echo addslashes(__('ratings')); ?>)</small>';
                     if (window.showToast) showToast('<?php echo addslashes(__('Rating saved!')); ?>', 'success');

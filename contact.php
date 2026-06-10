@@ -7,12 +7,13 @@ $frsToastMsg = '';
 $frsToastType = 'success';
 
 if(isset($_POST['submit'])) {
-    $fname=$_POST['fname'];
-    $emailid=$_POST['emailid'];
-    $subject=$_POST['subject'];
-    $message=$_POST['message'];
-    $query=mysqli_query($con, "insert into enquiries(userName,userEmail,subject,commentMessage) value('$fname','$emailid','$subject','$message' )");
-    if ($query) {
+    $fname=trim($_POST['fname']);
+    $emailid=trim($_POST['emailid']);
+    $subject=trim($_POST['subject']);
+    $message=trim($_POST['message']);
+    $query=$con->prepare("INSERT INTO enquiries(userName, userEmail, subject, commentMessage) VALUES (?, ?, ?, ?)");
+    $query->bind_param("ssss", $fname, $emailid, $subject, $message);
+    if ($query->execute()) {
         $_SESSION['frs_toast_msg'] = __('Enquiry sent successfully. We will contact you shortly');
         $_SESSION['frs_toast_type'] = 'success';
         header('Location: contact.php');

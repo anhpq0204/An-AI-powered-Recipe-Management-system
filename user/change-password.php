@@ -2,23 +2,29 @@
 require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
+require_once('../includes/auth.php');
 
 if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
     header('location:logout.php');
     exit;
 }
 
-$uid = $_SESSION['frsuid'];
+$uid = intval($_SESSION['frsuid']);
 $msg = "";
 
 if (isset($_POST['submit'])) {
-    $cpassword = md5($_POST['currentpassword']);
-    $newpassword = md5($_POST['newpassword']);
+    $stmt = $con->prepare("SELECT Password FROM users WHERE ID = ?");
+    $stmt->bind_param("i", $uid);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    $query = mysqli_query($con, "SELECT ID FROM users WHERE ID='$uid' AND Password='$cpassword'");
-    $row = mysqli_fetch_array($query);
-    if ($row > 0) {
-        $ret = mysqli_query($con, "UPDATE users SET Password='$newpassword' WHERE ID='$uid'");
+    if ($row && frs_password_verify($_POST['currentpassword'], $row['Password'])) {
+        $newpassword = frs_password_hash($_POST['newpassword']);
+        $up = $con->prepare("UPDATE users SET Password = ? WHERE ID = ?");
+        $up->bind_param("si", $newpassword, $uid);
+        $up->execute();
+        $up->close();
         $msg = __('Your password successfully changed.');
     } else {
         $msg = __('Your current password is wrong.');

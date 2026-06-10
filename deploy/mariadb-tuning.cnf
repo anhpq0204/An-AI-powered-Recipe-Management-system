@@ -1,0 +1,38 @@
+# ============================================================================
+# MariaDB tuning for Food Recipe System
+# Apply: copy into /etc/mysql/mariadb.conf.d/99-frs-tuning.cnf, then
+#        sudo systemctl restart mariadb
+#
+# WHY: defaults assume a tiny dataset and few connections. Once PHP-FPM is
+# raised to 50 workers, the DB must accept at least that many connections,
+# and the InnoDB buffer pool should hold the hot working set in RAM.
+# ============================================================================
+[mysqld]
+
+# Allow more concurrent connections than the PHP-FPM worker count, plus
+# headroom for admin tools and cron. PHP-FPM=50 -> set comfortably above.
+max_connections = 200
+
+# InnoDB buffer pool = the single most important DB performance knob.
+# Holds table + index pages in RAM. Rule of thumb on a dedicated DB host:
+# ~70% of RAM. On this shared box, a conservative fixed size:
+innodb_buffer_pool_size = 1G
+innodb_buffer_pool_instances = 1
+
+# Redo log sizing — larger logs = fewer flushes under write load.
+innodb_log_file_size = 256M
+
+# Flush behavior: 2 = flush to OS cache each commit (fast, ~1s durability
+# window on power loss). Use 1 for strict ACID on a money-critical system.
+innodb_flush_log_at_trx_commit = 2
+
+# Per-connection buffers kept modest to avoid blowing up RAM at 200 conns.
+sort_buffer_size = 2M
+join_buffer_size = 2M
+tmp_table_size = 32M
+max_heap_table_size = 32M
+
+# Slow query log to catch the correlated-subquery / full-scan hotspots.
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/frs-slow.log
+long_query_time = 1

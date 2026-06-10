@@ -6,6 +6,36 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
     header('location:logout.php');
     exit;
 }
+
+$uid = intval($_SESSION['frsuid']);
+
+// User name + owned-recipe count in one round trip.
+$stmt = $con->prepare("SELECT
+        (SELECT FullName FROM users WHERE ID = ?) AS full_name,
+        (SELECT COUNT(*) FROM recipes WHERE userId = ?) AS recipe_count");
+$stmt->bind_param("ii", $uid, $uid);
+$stmt->execute();
+$meta = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+$fullName = $meta['full_name'] ?? 'User';
+$fcounts  = intval($meta['recipe_count']);
+
+// All four comment buckets in a single aggregated query (was 4 queries).
+$stmt = $con->prepare("SELECT
+        COUNT(*) AS total,
+        SUM(c.status IS NULL) AS new_cnt,
+        SUM(c.status = 0)     AS rejected_cnt,
+        SUM(c.status = 1)     AS approved_cnt
+    FROM comments c JOIN recipes r ON r.id = c.recipeId
+    WHERE r.userId = ?");
+$stmt->bind_param("i", $uid);
+$stmt->execute();
+$cstats = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+$allcomments = intval($cstats['total']);
+$newcomments = intval($cstats['new_cnt']);
+$rejected    = intval($cstats['rejected_cnt']);
+$approved    = intval($cstats['approved_cnt']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,21 +58,12 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
 
         <h1 class="user-page-title">
             <?php _e('User Dashboard'); ?>
-            <small><?php _e('Welcome back,'); ?> <?php
-                $uid = $_SESSION['frsuid'];
-                $ret = mysqli_query($con,"SELECT FullName FROM users WHERE ID='$uid'");
-                $row = mysqli_fetch_array($ret);
-                echo htmlspecialchars($row['FullName'] ?? 'User');
-            ?></small>
+            <small><?php _e('Welcome back,'); ?> <?php echo htmlspecialchars($fullName); ?></small>
         </h1>
 
 		<!-- Stats Grid -->
 		<div class="user-stats-grid">
 
-            <?php
-            $query=mysqli_query($con,"SELECT id FROM recipes WHERE userId='$uid'");
-            $fcounts=mysqli_num_rows($query);
-            ?>
             <a href="manage-recipes.php" class="user-stat-card">
                 <div class="user-stat-icon bg-recipes"><i class="fa fa-cutlery"></i></div>
                 <div class="user-stat-info">
@@ -51,10 +72,6 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
                 </div>
             </a>
 
-            <?php
-            $query=mysqli_query($con,"SELECT comments.id FROM comments JOIN recipes ON recipes.id=comments.recipeId WHERE recipes.userId='$uid'");
-            $allcomments=mysqli_num_rows($query);
-            ?>
             <a href="all-comments.php" class="user-stat-card">
                 <div class="user-stat-icon bg-all-comments"><i class="fa fa-comments"></i></div>
                 <div class="user-stat-info">
@@ -63,10 +80,6 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
                 </div>
             </a>
 
-            <?php
-            $query=mysqli_query($con,"SELECT comments.id FROM comments JOIN recipes ON recipes.id=comments.recipeId WHERE recipes.userId='$uid' AND comments.status IS NULL");
-            $newcomments=mysqli_num_rows($query);
-            ?>
             <a href="new-comments.php" class="user-stat-card">
                 <div class="user-stat-icon bg-new-comments"><i class="fa fa-clock-o"></i></div>
                 <div class="user-stat-info">
@@ -75,10 +88,6 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
                 </div>
             </a>
 
-            <?php
-            $query1=mysqli_query($con,"SELECT comments.id FROM comments JOIN recipes ON recipes.id=comments.recipeId WHERE recipes.userId='$uid' AND comments.status='0'");
-            $rejected=mysqli_num_rows($query1);
-            ?>
             <a href="rejected-comments.php" class="user-stat-card">
                 <div class="user-stat-icon bg-rejected"><i class="fa fa-times-circle"></i></div>
                 <div class="user-stat-info">
@@ -87,10 +96,6 @@ if (!isset($_SESSION['frsuid']) || strlen($_SESSION['frsuid']) == 0) {
                 </div>
             </a>
 
-            <?php
-            $query2=mysqli_query($con,"SELECT comments.id FROM comments JOIN recipes ON recipes.id=comments.recipeId WHERE recipes.userId='$uid' AND comments.status='1'");
-            $approved=mysqli_num_rows($query2);
-            ?>
             <a href="approved-comments.php" class="user-stat-card">
                 <div class="user-stat-icon bg-approved"><i class="fa fa-check-circle"></i></div>
                 <div class="user-stat-info">

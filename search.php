@@ -54,31 +54,64 @@ $rows = [];
 $count = 0;
 
 if ($search !== '') {
-    // Full-text search with relevance score, fallback to LIKE
-    $stmt = $con->prepare(
-        "SELECT r.id, r.recipeTitle, r.recipePicture, r.postingDate, r.totalCalories,
-                r.recipePrepTime, r.recipeYields, u.FullName,
-                (SELECT COUNT(*) FROM favorites WHERE recipe_id = r.id) AS fav_count,
-                (SELECT ROUND(AVG(rating),1) FROM ratings WHERE recipe_id = r.id) AS avg_rating,
-                (SELECT COUNT(*) FROM ratings WHERE recipe_id = r.id) AS rating_count,
-                MATCH(r.recipeTitle, r.recipeDescription) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance
-         FROM recipes r
-         LEFT JOIN users u ON u.ID = r.userId
-         WHERE r.status = 1
-           AND (
-               MATCH(r.recipeTitle, r.recipeDescription) AGAINST(? IN NATURAL LANGUAGE MODE)
-               OR r.recipeTitle LIKE ?
-           )
-         ORDER BY relevance DESC, r.id DESC
-         LIMIT 50"
-    );
-    $like = '%' . $search . '%';
-    $stmt->bind_param("sss", $search, $search, $like);
+    $terms = preg_split('/\s+/', trim($search), -1, PREG_SPLIT_NO_EMPTY);
+
+    $scoreSelect = [];
+    $scoreTypes = '';
+    $scoreParams = [];
+    $ingScoreOr = [];
+    $whereAnd = [];
+    $whereTypes = '';
+    $whereParams = [];
+
+    $scoreSelect[] = "(r.recipeTitle LIKE ?) * 10";
+    $scoreTypes .= 's';
+    $scoreParams[] = '%' . $search . '%';
+
+    foreach ($terms as $term) {
+        $like = '%' . $term . '%';
+
+        $scoreSelect[] = "(r.recipeTitle LIKE ?) * 2";
+        $scoreTypes .= 's';
+        $scoreParams[] = $like;
+
+        $ingScoreOr[] = "i.name LIKE ?";
+        $ingScoreOr[] = "i.name_vi LIKE ?";
+        $scoreTypes .= 'ss';
+        $scoreParams[] = $like;
+        $scoreParams[] = $like;
+
+        $whereAnd[] = "(r.recipeTitle LIKE ?"
+            . " OR EXISTS(SELECT 1 FROM recipe_ingredients ri_s"
+            . " JOIN ingredients i_s ON i_s.id = ri_s.ingredient_id"
+            . " WHERE ri_s.recipe_id = r.id AND (i_s.name LIKE ? OR i_s.name_vi LIKE ?)))";
+        $whereTypes .= 'sss';
+        $whereParams[] = $like;
+        $whereParams[] = $like;
+        $whereParams[] = $like;
+    }
+
+    $scoreSelect[] = "(SELECT COUNT(*) FROM recipe_ingredients ri"
+        . " JOIN ingredients i ON i.id = ri.ingredient_id"
+        . " WHERE ri.recipe_id = r.id AND (" . implode(' OR ', $ingScoreOr) . ")) * 3";
+
+    $scoreExpr = implode(' + ', $scoreSelect);
+    $whereClause = '(' . implode(' AND ', $whereAnd) . ')';
+    $selectCols = "SELECT r.id, r.recipeTitle, r.recipePicture, r.postingDate, r.totalCalories,
+            r.recipePrepTime, r.recipeYields, u.FullName,
+            (SELECT COUNT(*) FROM favorites WHERE recipe_id = r.id) AS fav_count,
+            (SELECT ROUND(AVG(rating),1) FROM ratings WHERE recipe_id = r.id) AS avg_rating,
+            (SELECT COUNT(*) FROM ratings WHERE recipe_id = r.id) AS rating_count,
+            ($scoreExpr) AS score
+        FROM recipes r LEFT JOIN users u ON u.ID = r.userId";
+
+    $stmt = $con->prepare("$selectCols WHERE r.status = 1 AND $whereClause ORDER BY score DESC, r.id DESC");
+    $stmt->bind_param($scoreTypes . $whereTypes, ...array_merge($scoreParams, $whereParams));
     $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = $result->fetch_all(MYSQLI_ASSOC);
-    $count = count($rows);
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
+
+    $count = count($rows);
 }
 
 if ($count > 0):

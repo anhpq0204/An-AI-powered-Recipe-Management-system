@@ -2,27 +2,34 @@
 require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
+require_once('../includes/auth.php');
 
 $msg = "";
 $msgClass = "auth-alert";
 if(isset($_POST['submit'])) {
-    $fname=$_POST['name'];
-    $mobno=$_POST['mobilnumber'];
-    $email=$_POST['email'];
-    $password=md5($_POST['password']);
+    $fname = trim($_POST['name']);
+    $mobno = trim($_POST['mobilnumber']);
+    $email = trim($_POST['email']);
+    $password = frs_password_hash($_POST['password']);
 
-    $ret=mysqli_query($con, "select Email from users where Email='$email'");
-    $result=mysqli_fetch_array($ret);
-    if($result>0){
+    $check = $con->prepare("SELECT ID FROM users WHERE Email = ?");
+    $check->bind_param("s", $email);
+    $check->execute();
+    $exists = $check->get_result()->num_rows > 0;
+    $check->close();
+
+    if ($exists) {
         $msg=__('This email or Contact Number is already associated with another account.');
     } else {
-        $query=mysqli_query($con, "insert into users(FullName, MobileNumber, Email, Password) value('$fname', '$mobno', '$email', '$password' )");
-        if ($query) {
+        $stmt = $con->prepare("INSERT INTO users(FullName, MobileNumber, Email, Password) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $fname, $mobno, $email, $password);
+        if ($stmt->execute()) {
             $msg=__('You have successfully registered. You can now login.');
             $msgClass = "auth-alert auth-success";
         } else {
             $msg=__('Something Went Wrong. Please try again.');
         }
+        $stmt->close();
     }
 }
 ?>

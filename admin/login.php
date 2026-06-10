@@ -2,19 +2,33 @@
 require_once('../includes/lang.php');
 require_once('../includes/session.php');
 include('../includes/dbconnection.php');
+require_once('../includes/auth.php');
 
 $msg = "";
 if(isset($_POST['login'])) {
-    $adminuser=$_POST['username'];
-    $password=md5($_POST['password']);
-    $query=mysqli_query($con,"select ID from admins where UserName='$adminuser' && Password='$password'");
-    $ret=mysqli_fetch_array($query);
-    if($ret){
-      $_SESSION['frsaid']=$ret['ID'];
-      header('location:dashboard.php');
-      exit;
+    $adminuser = trim($_POST['username']);
+    $plain = $_POST['password'];
+
+    $stmt = $con->prepare("SELECT ID, Password FROM admins WHERE UserName = ?");
+    $stmt->bind_param("s", $adminuser);
+    $stmt->execute();
+    $ret = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if ($ret && frs_password_verify($plain, $ret['Password'])) {
+        // Transparently upgrade legacy MD5 hashes to bcrypt on login.
+        if (frs_password_needs_rehash($ret['Password'])) {
+            $newHash = frs_password_hash($plain);
+            $up = $con->prepare("UPDATE admins SET Password = ? WHERE ID = ?");
+            $up->bind_param("si", $newHash, $ret['ID']);
+            $up->execute();
+            $up->close();
+        }
+        $_SESSION['frsaid'] = $ret['ID'];
+        header('location:dashboard.php');
+        exit;
     } else {
-        $msg=__('Invalid Admin Details. Please try again.');
+        $msg = __('Invalid Admin Details. Please try again.');
     }
 }
 ?>

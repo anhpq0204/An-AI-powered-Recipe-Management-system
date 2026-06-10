@@ -15,4 +15,8 @@ if(mysqli_connect_errno()){
     die("Database connection error. Please try again later.");
 }
 
-  ?>
+// Ensure the connection speaks utf8mb4 so Vietnamese text is not corrupted.
+// Tables are utf8mb4, but the client connection defaults to the server charset
+// (often latin1) unless explicitly set.
+mysqli_set_charset($con, 'utf8mb4');
+?>

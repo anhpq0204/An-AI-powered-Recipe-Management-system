@@ -3,18 +3,22 @@ include('../includes/dbconnection.php');
 
 if(isset($_POST['submit']))
   {
-    $contactno=$_POST['contactno'];
-    $email=$_POST['email'];
+    $contactno=trim($_POST['contactno']);
+    $email=trim($_POST['email']);
 
-        $query=mysqli_query($con,"select ID from admins where  Email='$email' and MobileNumber='$contactno' ");
-    $ret=mysqli_fetch_array($query);
-    if($ret>0){
+    $query=$con->prepare("SELECT ID FROM admins WHERE Email = ? AND MobileNumber = ?");
+    $query->bind_param("ss", $email, $contactno);
+    $query->execute();
+    $ret=$query->get_result()->fetch_assoc();
+    $query->close();
+    if($ret){
       $_SESSION['contactno']=$contactno;
       $_SESSION['email']=$email;
      header('location:reset-password.php');
+     exit;
     }
     else{
-      
+
       echo "<script>window._frsToast=" . json_encode(['msg' => 'Invalid Details. Please try again.', 'type' => 'danger']) . ";</script>";
     }
   }
